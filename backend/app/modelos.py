@@ -1,8 +1,8 @@
 # Tablas de la base de datos.
 # Solo se guardan estadísticas: NUNCA video, audio ni imágenes.
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 
-from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Integer, String
+from sqlalchemy import Boolean, Date, DateTime, Float, ForeignKey, Integer, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .database import Base
@@ -137,3 +137,15 @@ class Salon(Base):
 
     escuela: Mapped[Escuela] = relationship(back_populates="salones")
     miembros: Mapped[list[Usuario]] = relationship(back_populates="salon", foreign_keys="Usuario.salon_id")
+
+
+class UsoAsistente(Base):
+    """Cuántas preguntas hizo cada estudiante al asistente cada día (solo el número, nunca el contenido)."""
+
+    __tablename__ = "uso_asistente"
+    __table_args__ = (UniqueConstraint("usuario_id", "dia"),)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    usuario_id: Mapped[int] = mapped_column(ForeignKey("usuarios.id", ondelete="CASCADE"), index=True)
+    dia: Mapped[date] = mapped_column(Date, index=True)
+    usos: Mapped[int] = mapped_column(Integer, default=0)

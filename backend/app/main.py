@@ -10,7 +10,7 @@ import logging
 from .database import actualizar_tablas, describir_bd, motor
 
 logging.getLogger("uvicorn.error").warning("Base de datos en uso: %s", describir_bd())
-from .rutas import cuentas, escuelas, paquetes, ranking, sesiones
+from .rutas import asistente, cuentas, escuelas, paquetes, ranking, sesiones
 
 # Crea las tablas (o agrega columnas nuevas) si hace falta
 if ("sesiones", "paquete") in actualizar_tablas():
@@ -18,7 +18,7 @@ if ("sesiones", "paquete") in actualizar_tablas():
     with motor.begin() as conexion:
         conexion.execute(text("UPDATE sesiones SET paquete = modo"))
 
-app = FastAPI(title="VigilaTec API", version="0.3.0")
+app = FastAPI(title="VigilaTec API", version="0.4.0")
 
 
 @app.get("/api/salud")
@@ -33,8 +33,7 @@ app.include_router(paquetes.router)
 app.include_router(cuentas.router)    # registro e inicio de sesión
 app.include_router(escuelas.router)   # escuelas, salones y códigos de invitación
 app.include_router(ranking.router)    # ranking y progreso semanal
-# Próxima fase (un archivo nuevo en app/rutas/):
-#   app.include_router(ia_academica.router) -> IA de búsqueda académica
+app.include_router(asistente.router)  # asistente académico con IA (Claude)
 
 # La página web se sirve al final, para no tapar las rutas /api
 app.mount("/", StaticFiles(directory=CARPETA_FRONTEND, html=True), name="frontend")

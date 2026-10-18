@@ -4,3 +4,4 @@ sqlalchemy==2.1.5
 psycopg[binary]==3.3.6
 argon2-cffi==25.1.0
 tzdata==2026.5
+anthropic==1.15.0

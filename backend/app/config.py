@@ -33,3 +33,11 @@ EN_PRODUCCION = os.getenv("RENDER") is not None
 
 # Zona horaria para agrupar por semana y día
 ZONA_HORARIA = os.getenv("ZONA_HORARIA", "America/Mexico_City")
+
+# --- Asistente académico (IA de Claude) ---
+# La clave va SOLO en la variable ANTHROPIC_API_KEY de Render (la librería la lee sola). Nunca en el código.
+ASISTENTE_MODELO = os.getenv("ASISTENTE_MODELO", "claude-opus-5-5")
+ASISTENTE_ESFUERZO = os.getenv("ASISTENTE_ESFUERZO", "low")          # low = respuestas más rápidas y baratas
+ASISTENTE_MAX_TOKENS = int(os.getenv("ASISTENTE_MAX_TOKENS", "2500"))  # tope de largo por respuesta
+ASISTENTE_LIMITE_DIARIO = int(os.getenv("ASISTENTE_LIMITE_DIARIO", "15"))        # preguntas por estudiante al día
+ASISTENTE_LIMITE_GLOBAL = int(os.getenv("ASISTENTE_LIMITE_GLOBAL", "300"))       # preguntas de toda la app al día

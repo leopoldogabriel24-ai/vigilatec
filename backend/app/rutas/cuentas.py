@@ -7,7 +7,7 @@ from ..catalogo import VERSION_AVISO
 from ..config import ADMIN_CORREOS, EN_PRODUCCION
 from ..database import obtener_bd
 from ..esquemas import BorrarCuenta, CambiosCuenta, EntrarEntrada, RegistroEntrada, UsuarioSalida
-from ..modelos import Distraccion, Escuela, SesionEstudio, TokenAcceso, Usuario
+from ..modelos import Distraccion, Escuela, SesionEstudio, TokenAcceso, UsoAsistente, Usuario
 from ..servicios.seguridad import (
     DURACION_SESION, NOMBRE_COOKIE, borrar_token, cifrar_contrasena, crear_token,
     revisar_intentos, usuario_requerido, verificar_contrasena,
@@ -121,6 +121,7 @@ def borrar_cuenta(
     bd.execute(delete(Distraccion).where(Distraccion.sesion_id.in_(ids)))
     bd.execute(delete(SesionEstudio).where(SesionEstudio.usuario_id == usuario.id))
     bd.execute(delete(TokenAcceso).where(TokenAcceso.usuario_id == usuario.id))
+    bd.execute(delete(UsoAsistente).where(UsoAsistente.usuario_id == usuario.id))
     bd.delete(usuario)
     bd.commit()
     respuesta.delete_cookie(NOMBRE_COOKIE, path="/")
