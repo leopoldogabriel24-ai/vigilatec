@@ -41,11 +41,12 @@ function tono(frecuencia, tipo, puntos, inicio, frecuenciaFinal) {
   o.stop(inicio + puntos.at(-1)[0] + 0.05);
 }
 
-/** Ruido filtrado con envolvente (respiración, fuego, golpes). */
-function soplo(inicio, duracion, filtro, frecuencia, puntos, q = 1) {
+/** Ruido filtrado con envolvente (respiración, fuego, golpes). `barrido` mueve el filtro: [[segundo, Hz], ...] */
+function soplo(inicio, duracion, filtro, frecuencia, puntos, q = 1, barrido = []) {
   const f = ctx.createBiquadFilter();
   f.type = filtro;
-  f.frequency.value = frecuencia;
+  f.frequency.setValueAtTime(frecuencia, inicio);
+  for (const [t, hz] of barrido) f.frequency.exponentialRampToValueAtTime(hz, inicio + t);
   f.Q.value = q;
   const fuente = ruido(duracion);
   const g = envolvente(puntos, inicio);
@@ -55,14 +56,15 @@ function soplo(inicio, duracion, filtro, frecuencia, puntos, q = 1) {
 }
 
 const EFECTOS = {
-  // Respiración mecánica: inhalar y exhalar a través de un respirador
+  // Respiración mecánica de respirador: inhalar (silbido agudo) y exhalar (soplo grave), lenta
   respiracion(t) {
-    soplo(t, 0.8, "bandpass", 900, [[0.35, 0.35], [0.8, 0.01]], 2.5);
-    soplo(t + 0.85, 0.9, "bandpass", 500, [[0.3, 0.3], [0.9, 0.01]], 2.5);
-    return 1600;
+    soplo(t, 1.0, "bandpass", 1400, [[0.45, 0.4], [1.0, 0.01]], 4, [[1.0, 1800]]);
+    soplo(t + 1.05, 1.1, "bandpass", 420, [[0.25, 0.45], [1.1, 0.01]], 3, [[1.1, 300]]);
+    return 2150;
   },
-  // Golpe metálico de armadura
+  // Golpe metálico de armadura sobre un zumbido grave
   metal(t) {
+    tono(55, "sawtooth", [[0.1, 0.05], [0.9, 0.001]], t);
     for (const [f, v] of [[310, 0.25], [523, 0.15], [847, 0.1]]) tono(f, "sine", [[0.005, v], [0.6, 0.001]], t);
     for (const [f, v] of [[290, 0.2], [610, 0.12]]) tono(f, "sine", [[0.005, v], [0.5, 0.001]], t + 0.22);
     return 650;
@@ -81,8 +83,9 @@ const EFECTOS = {
     tono(440, "sine", [[0.06, 0.28], [0.5, 0.001]], t + 0.28, 380);
     return 850;
   },
-  // Fuego que crepita (la voz empieza mientras el fuego sigue)
+  // Fuego que crepita sobre un rugido grave (la voz empieza mientras el fuego sigue)
   fuego(t) {
+    tono(45, "sawtooth", [[0.4, 0.06], [1.6, 0.001]], t);
     soplo(t, 1.4, "lowpass", 300, [[0.3, 0.35], [1.4, 0.001]]);
     for (let i = 0; i < 14; i++) {
       const d = Math.random() * 1.2;
@@ -95,6 +98,17 @@ const EFECTOS = {
     tono(880, "sine", [[0.01, 0.18], [1.0, 0.001]], t);
     tono(1320, "sine", [[0.01, 0.1], [0.8, 0.001]], t + 0.15);
     return 700;
+  },
+  // Capa que se agita en la oscuridad
+  capa(t) {
+    soplo(t, 0.7, "bandpass", 300, [[0.25, 0.45], [0.7, 0.001]], 1.2, [[0.3, 1800], [0.7, 400]]);
+    return 650;
+  },
+  // Propulsor de armadura cargándose
+  repulsor(t) {
+    tono(220, "sine", [[0.4, 0.12], [0.55, 0.001]], t, 1400);
+    soplo(t + 0.35, 0.3, "highpass", 1500, [[0.05, 0.2], [0.3, 0.001]]);
+    return 650;
   },
   // Pitido de sistema: "bip-bip"
   pitido(t) {

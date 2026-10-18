@@ -51,7 +51,8 @@ vigilatec/
 - Segundos antes de avisar, severidad, sensibilidad y frases: `frontend/js/config.js`.
 - Personajes (dibujo, voz, tono, efecto de sonido): `frontend/js/vigilantes.js`. Si agregas uno, añade su `id` en `backend/app/catalogo.py`.
 - Efectos de sonido (respiración, fuego, pitido…): `frontend/js/efectos.js`, generados por el navegador.
-- Vigilantes premium: personajes ORIGINALES (no usar personajes con derechos de autor). Para volverlos de pago:
+- Vigilantes premium: hoy son un PROTOTIPO inspirado en personajes famosos; antes de publicarlos en serio o venderlos
+  hay que cambiarlos por diseños originales o licenciados. Para volverlos de pago:
   `VIGILANTES_PREMIUM_DE_PAGO = True` en `catalogo.py` y la regla en `servicios/acceso.py`.
 
 ## Paquetes de uso

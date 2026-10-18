@@ -401,3 +401,37 @@ main { flex: 1; width: 100%; max-width: 1100px; margin: 0 auto; padding: 2rem 16
 .vigilante.ap-penumbra .ceja { stroke: #9575cd; }
 .vigilante.ap-ares .boca { stroke: #8a5a3a; }
 .vigilante.nivel-3 .pupila.violeta, .vigilante.nivel-3 .pupila.ambar { fill: var(--rojo); }
+
+/* ===== Premium v2 (prototipo) ===== */
+.vigilante .capa-negra { fill: #0e1015; }
+.vigilante .casco-negro { fill: #15171c; stroke: #2c3038; stroke-width: 2; }
+.vigilante .brillo-casco { fill: none; stroke: rgba(255, 255, 255, .28); stroke-width: 5; stroke-linecap: round; }
+.vigilante .mascara { fill: #2a2e36; }
+.vigilante .triangulo-boca { fill: #121419; stroke: #6b7380; stroke-width: 2; }
+.vigilante .boton-rojo { fill: #e53935; } .vigilante .boton-verde { fill: #43a047; } .vigilante .boton-azul { fill: #1e88e5; }
+.vigilante .mascara-acero { fill: #9aa5b1; stroke: #5b6470; stroke-width: 2; }
+.vigilante .piel-ceniza { fill: #dedad2; }
+.vigilante .tela-roja { fill: #a3262a; }
+.vigilante .cicatriz { fill: none; stroke: #b9a99a; stroke-width: 2; stroke-linecap: round; }
+.vigilante .gris-traje { fill: #5d6673; }
+.vigilante .capucha { fill: #1c2028; }
+.vigilante .pupila.ojo-blanco { fill: #f5f7fa; }
+.vigilante .torre { fill: #1d1517; }
+.vigilante .tunica { fill: #8a6e4b; } .vigilante .tunica-clara { fill: #b59a74; }
+.vigilante .piel-verde { fill: #9fb87a; }
+.vigilante .oreja-interior { fill: #c4a39a; opacity: .7; }
+.vigilante .pelo-blanco { fill: none; stroke: #f1f1ee; stroke-width: 2; stroke-linecap: round; }
+.vigilante .arrugas-verdes { fill: none; stroke: #6f8a4d; stroke-width: 2; stroke-linecap: round; }
+.vigilante .ojo-yoda { fill: #f3efd8; stroke: #6f8a4d; stroke-width: 1.5; }
+.vigilante .rojo-armadura { fill: #b71c1c; stroke: #7f0000; stroke-width: 2; }
+.vigilante .dorado-armadura { fill: #f2c94c; stroke: #b8902a; stroke-width: 1.5; }
+.vigilante .trazo-dorado { fill: none; stroke: #b8902a; stroke-width: 2.5; stroke-linecap: round; }
+.vigilante .reactor { fill: #e0f7fa; stroke: #4dd0e1; stroke-width: 4; filter: drop-shadow(0 0 4px #4dd0e1); }
+.vigilante .pupila.luz-blanca { fill: #e8fbff; filter: drop-shadow(0 0 3px #80deea); }
+.vigilante.ap-penumbra .ceja, .vigilante.ap-penumbra .boca { stroke: #6b7380; }
+.vigilante.ap-tirano .ceja { stroke: #4a525e; } .vigilante.ap-tirano .boca { stroke: #3a414c; }
+.vigilante.ap-ares .ceja { stroke: #2b2b2b; } .vigilante.ap-ares .boca { stroke: #e8d9c8; }
+.vigilante.ap-buho .ceja { stroke: #3a4250; } .vigilante.ap-buho .boca { stroke: #6b4a3a; }
+.vigilante.ap-musgo .ceja { stroke: #5d7840; } .vigilante.ap-musgo .boca { stroke: #5d7840; }
+.vigilante.ap-exo .ceja, .vigilante.ap-exo .boca { stroke: #8a6a1a; stroke-width: 4; }
+.vigilante.nivel-3 .pupila.ojo-blanco, .vigilante.nivel-3 .pupila.luz-blanca { fill: #ff5252; }
