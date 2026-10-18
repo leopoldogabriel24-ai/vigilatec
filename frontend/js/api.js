@@ -20,6 +20,7 @@ async function pedir(ruta, opciones = {}) {
   return r.json();
 }
 
+export const paquetes = () => pedir("api/paquetes");
 export const guardarSesion = (datos) => pedir("api/sesiones", { method: "POST", body: JSON.stringify(datos) });
 export const historial = () => pedir(`api/sesiones?dispositivo_id=${encodeURIComponent(idDispositivo())}`);
 export const informe = (id) => pedir(`api/sesiones/${id}?dispositivo_id=${encodeURIComponent(idDispositivo())}`);

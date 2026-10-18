@@ -9,8 +9,9 @@ import * as api from "./api.js";
 const $ = (id) => document.getElementById(id);
 
 // Estado de la app
-let modo = "examen";
-let sesion = null;   // datos de la sesión en curso
+let paquetes = [];     // catálogo que llega del servidor
+let paquete = null;    // paquete elegido
+let sesion = null;     // datos de la sesión en curso
 
 const vigilante = new Vigilante($("vigilante"), $("mensaje"));
 
@@ -29,21 +30,80 @@ document.querySelectorAll("[data-ir]").forEach((b) =>
   })
 );
 
-document.querySelectorAll("[data-modo]").forEach((b) =>
-  b.addEventListener("click", () => {
-    modo = b.dataset.modo;
-    $("config-titulo").textContent = MODOS[modo].nombre;
-    $("cfg-minutos").value = MODOS[modo].minutos;
-    $("config-error").hidden = true;
-    mostrar("config");
-  })
-);
+// ---------- Paquetes ----------
+async function cargarPaquetes() {
+  const lista = $("lista-paquetes");
+  try {
+    paquetes = await api.paquetes();
+  } catch {
+    lista.innerHTML = "<p class='error'>No se pudieron cargar los paquetes. Revisa tu conexión y recarga la página.</p>";
+    return;
+  }
+  lista.innerHTML = "";
+  for (const p of paquetes) {
+    const b = document.createElement("button");
+    b.className = "tarjeta-modo";
+    b.dataset.paquete = p.id;
+    b.innerHTML = "<span class='icono'></span><h2></h2><p></p><span class='insignia-precio'></span>";
+    b.querySelector(".icono").textContent = p.icono;
+    b.querySelector("h2").textContent = p.nombre;
+    b.querySelector("p").textContent = p.descripcion;
+    const insignia = b.querySelector(".insignia-precio");
+    if (p.disponible) {
+      insignia.textContent = p.de_pago ? "Incluido en tu plan" : "Gratis";
+    } else {
+      // Futuro: paquetes de pago que el estudiante aún no tiene
+      insignia.textContent = p.precio_mxn ? `De pago · $${p.precio_mxn} MXN` : "Próximamente";
+      insignia.classList.add("pago");
+      b.disabled = true;
+    }
+    b.addEventListener("click", () => elegirPaquete(p));
+    lista.appendChild(b);
+  }
+}
+
+function elegirPaquete(p) {
+  paquete = p;
+  $("config-titulo").textContent = p.nombre;
+  $("config-descripcion").textContent = p.descripcion;
+  $("config-error").hidden = true;
+
+  // Duración: botones fijos o minutos libres
+  const botones = $("cfg-duraciones");
+  botones.innerHTML = "";
+  botones.hidden = !p.duraciones;
+  $("cfg-minutos-libre").hidden = !!p.duraciones;
+  if (p.duraciones) {
+    for (const min of p.duraciones) {
+      const l = document.createElement("label");
+      l.innerHTML = `<input type="radio" name="duracion" value="${min}"><span>${min} min</span>`;
+      l.querySelector("input").checked = min === p.duracion_por_defecto;
+      botones.appendChild(l);
+    }
+  } else {
+    $("cfg-minutos").value = p.duracion_por_defecto;
+  }
+
+  // Severidad: algunos paquetes la fijan (el simulacro de examen siempre es estricto)
+  document.querySelectorAll("input[name=severidad]").forEach((r) => {
+    r.disabled = !!p.severidad_fija;
+    if (p.severidad_fija) r.checked = r.value === p.severidad_fija;
+  });
+  $("cfg-severidad-nota").textContent = p.severidad_fija
+    ? "En este paquete el vigilante siempre es estricto, como en un examen real."
+    : "";
+  mostrar("config");
+}
+
+cargarPaquetes();
 
 // ---------- Comenzar sesión ----------
 $("btn-comenzar").addEventListener("click", comenzar);
 
 async function comenzar() {
-  const minutos = Math.round(Number($("cfg-minutos").value));
+  const minutos = paquete.duraciones
+    ? Number(document.querySelector("input[name=duracion]:checked")?.value)
+    : Math.round(Number($("cfg-minutos").value));
   if (!(minutos >= 1 && minutos <= 360)) return mostrarError("Escribe una duración entre 1 y 360 minutos.");
 
   const boton = $("btn-comenzar");
@@ -70,8 +130,9 @@ async function comenzar() {
   const severidad = document.querySelector("input[name=severidad]:checked").value;
   vigilante.voz = $("cfg-voz").checked;
 
+  const modo = paquete.modo;
   sesion = {
-    modo, severidad, minutos, detector,
+    modo, paquete: paquete.id, severidad, minutos, detector,
     temporizador: new Temporizador(minutos * 60),
     vigilancia: new Vigilancia(modo, severidad, (tipo, nivel) => {
       vigilante.advertir(tipo, nivel);
@@ -82,7 +143,7 @@ async function comenzar() {
     ultimoAnimo: 0,
     bloqueoPantalla: null,
   };
-  $("sesion-modo").textContent = MODOS[modo].nombre;
+  $("sesion-modo").textContent = paquete.nombre;
   $("reloj").textContent = formatoReloj(minutos * 60);
   $("progreso").style.width = "0";
   $("pct-vivo").textContent = "—";
@@ -202,6 +263,7 @@ async function finalizar() {
   const datos = {
     dispositivo_id: api.idDispositivo(),
     modo: s.modo,
+    paquete: s.paquete,
     severidad: s.severidad,
     duracion_planeada: s.minutos * 60,
     duracion_real: seg,
@@ -232,14 +294,17 @@ function informeLocal(d) {
     tiempoTipo[x.tipo] = (tiempoTipo[x.tipo] ?? 0) + x.duracion;
   }
   return {
-    duracion_real: d.duracion_real, tiempo_concentrado: concentrado, porcentaje_concentracion: pct,
+    paquete: d.paquete, duracion_real: d.duracion_real, tiempo_concentrado: concentrado, porcentaje_concentracion: pct,
     numero_distracciones: d.distracciones.length, distracciones_por_tipo: porTipo, tiempo_por_tipo: tiempoTipo,
     distraccion_mas_larga: Math.max(0, ...d.distracciones.map((x) => x.duracion)),
     mensaje: pct >= 75 ? "Buen trabajo." : "Sigue practicando, cada sesión cuenta.",
   };
 }
 
+const nombrePaquete = (id) => paquetes.find((p) => p.id === id)?.nombre ?? (id === "examen" ? "Examen" : "Estudio");
+
 function pintarInforme(inf) {
+  $("inf-paquete").textContent = inf.paquete ? nombrePaquete(inf.paquete) : "";
   $("inf-mensaje").textContent = inf.mensaje;
   $("inf-pct").textContent = `${Math.round(inf.porcentaje_concentracion)}%`;
   $("inf-anillo").style.setProperty("--pct", inf.porcentaje_concentracion);
@@ -277,7 +342,7 @@ async function cargarHistorial() {
       const tr = document.createElement("tr");
       const celdas = [
         new Date(s.fecha).toLocaleString("es", { dateStyle: "short", timeStyle: "short" }),
-        s.modo === "examen" ? "Examen" : "Estudio",
+        nombrePaquete(s.paquete ?? s.modo),
         formatoDuracion(s.duracion_real),
         s.numero_distracciones,
         `${Math.round(s.porcentaje_concentracion)}%`,

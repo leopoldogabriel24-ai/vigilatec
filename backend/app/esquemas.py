@@ -4,7 +4,7 @@ from typing import Literal
 
 from pydantic import BaseModel, Field, field_validator
 
-TipoDistraccion = Literal["ausente", "mirada", "movimiento", "pestana", "otra_persona"]
+TipoDistraccion = Literal["ausente", "mirada", "movimiento", "pestana", "otra_persona", "ruido"]
 
 
 class DistraccionEntrada(BaseModel):
@@ -19,10 +19,29 @@ class SesionEntrada(BaseModel):
 
     dispositivo_id: str = Field(min_length=8, max_length=64)
     modo: Literal["examen", "estudio"]
+    paquete: str | None = Field(default=None, max_length=30)   # si no viene, se usa el del modo
+    apariencia: str = Field(default="vigilatec", max_length=20)
+    microfono: bool = False
     severidad: Literal["suave", "normal", "estricto"] = "normal"
     duracion_planeada: int = Field(ge=60, le=6 * 3600)
     duracion_real: int = Field(ge=0, le=6 * 3600)
     distracciones: list[DistraccionEntrada] = Field(default_factory=list, max_length=2000)
+
+
+class Paquete(BaseModel):
+    """Un paquete de uso (por ejemplo, Preparación para exámenes)."""
+
+    id: str
+    nombre: str
+    descripcion: str
+    icono: str
+    modo: str
+    duraciones: list[int] | None
+    duracion_por_defecto: int
+    severidad_fija: str | None
+    de_pago: bool
+    precio_mxn: float | None
+    disponible: bool
 
 
 class ConFecha(BaseModel):
@@ -40,6 +59,9 @@ class Informe(ConFecha):
 
     id: int
     modo: str
+    paquete: str
+    apariencia: str
+    microfono: bool
     severidad: str
     duracion_planeada: int
     duracion_real: int
@@ -58,6 +80,7 @@ class ResumenSesion(ConFecha):
 
     id: int
     modo: str
+    paquete: str
     duracion_real: int
     tiempo_concentrado: int
     numero_distracciones: int

@@ -2,7 +2,7 @@
 # Solo se guardan estadísticas: NUNCA video, audio ni imágenes.
 from datetime import datetime, timezone
 
-from sqlalchemy import DateTime, ForeignKey, Integer, String, Float
+from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .database import Base
@@ -24,6 +24,9 @@ class SesionEstudio(Base):
     usuario_id: Mapped[int | None] = mapped_column(Integer, nullable=True, index=True)
 
     modo: Mapped[str] = mapped_column(String(20))  # "examen" o "estudio"
+    paquete: Mapped[str] = mapped_column(String(30), default="estudio")
+    apariencia: Mapped[str] = mapped_column(String(20), default="vigilatec")
+    microfono: Mapped[bool] = mapped_column(Boolean, default=False)  # solo si se midió el volumen
     severidad: Mapped[str] = mapped_column(String(20), default="normal")
     fecha: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_ahora)
 
@@ -45,7 +48,7 @@ class Distraccion(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     sesion_id: Mapped[int] = mapped_column(ForeignKey("sesiones.id"), index=True)
-    tipo: Mapped[str] = mapped_column(String(30))  # ausente, mirada, movimiento...
+    tipo: Mapped[str] = mapped_column(String(30))  # ausente, mirada, movimiento, ruido...
     inicio: Mapped[int] = mapped_column(Integer)  # segundo de la sesión en que empezó
     duracion: Mapped[int] = mapped_column(Integer)  # cuántos segundos duró
     nivel: Mapped[int] = mapped_column(Integer)  # severidad del aviso: 1, 2 o 3

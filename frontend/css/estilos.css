@@ -17,6 +17,7 @@
 }
 
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }  /* lo oculto siempre queda oculto */
 
 body {
   margin: 0;
@@ -59,6 +60,7 @@ main { flex: 1; width: 100%; max-width: 1100px; margin: 0 auto; padding: 2rem 16
 .logo-grande { display: block; width: min(240px, 60vw); height: auto; margin: 0 auto 1.5rem; }
 .tarjetas-modo { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; max-width: 820px; margin: 0 auto; }
 .tarjeta-modo {
+  display: flex; flex-direction: column; align-items: flex-start;
   text-align: left; padding: 1.6rem; border-radius: 16px;
   background: var(--blanco); border: 2px solid var(--borde);
   box-shadow: 0 2px 10px rgba(4, 84, 145, .08);
@@ -68,6 +70,11 @@ main { flex: 1; width: 100%; max-width: 1100px; margin: 0 auto; padding: 2rem 16
 .tarjeta-modo .icono { display: block; font-size: 2.4rem; line-height: 1; height: 2.6rem; }
 .tarjeta-modo h2 { color: var(--azul); margin-top: .5rem; font-size: 1.35rem; }
 .tarjeta-modo p { margin: 0; color: var(--texto-suave); }
+
+.tarjeta-modo:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+.insignia-precio { display: inline-block; margin-top: .9rem; padding: .15rem .65rem; border-radius: 999px; font-size: .8rem; font-weight: 700; background: var(--verde-fondo); color: var(--verde); }
+.insignia-precio.pago { background: var(--azul-tenue); color: var(--azul); }
+.etiqueta-paquete { text-align: center; margin: -.25rem 0 .5rem; color: var(--azul); font-weight: 600; }
 
 /* ===== Paneles y formularios ===== */
 .panel { background: var(--blanco); border: 1px solid var(--borde); border-radius: 14px; padding: 1.25rem; max-width: 640px; margin: 0 auto 1.25rem; }
@@ -83,6 +90,8 @@ main { flex: 1; width: 100%; max-width: 1100px; margin: 0 auto; padding: 2rem 16
 .segmentos span { display: block; padding: .5rem 1rem; border-radius: 999px; border: 1px solid var(--azul); color: var(--azul); cursor: pointer; font-weight: 600; }
 .segmentos input:checked + span { background: var(--azul); color: var(--blanco); }
 .segmentos input:focus-visible + span { outline: 2px solid var(--azul-oscuro); outline-offset: 2px; }
+.nota { margin: .5rem 0 0; font-size: .88rem; color: var(--texto-suave); }
+#cfg-minutos-libre { display: flex; align-items: center; gap: .5rem; }
 .interruptor { display: flex; align-items: center; gap: .6rem; cursor: pointer; }
 .interruptor input { width: 20px; height: 20px; accent-color: var(--azul); }
 

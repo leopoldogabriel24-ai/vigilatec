@@ -3,9 +3,11 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
+from ..catalogo import APARIENCIAS, PAQUETES_POR_ID
 from ..database import obtener_bd
 from ..esquemas import Informe, ResumenSesion, SesionEntrada
 from ..modelos import Distraccion, SesionEstudio
+from ..servicios.acceso import puede_usar
 from ..servicios.informe import calcular_tiempo_distraido, construir_informe, porcentaje
 
 router = APIRouter(prefix="/api/sesiones", tags=["sesiones"])
@@ -14,12 +16,23 @@ router = APIRouter(prefix="/api/sesiones", tags=["sesiones"])
 @router.post("", response_model=Informe)
 def guardar_sesion(datos: SesionEntrada, bd: Session = Depends(obtener_bd)):
     """Guarda una sesión terminada y devuelve su informe."""
+    paquete = PAQUETES_POR_ID.get(datos.paquete or datos.modo)
+    if not paquete or paquete["modo"] != datos.modo:
+        raise HTTPException(status_code=422, detail="Paquete no válido")
+    if not puede_usar(paquete):
+        raise HTTPException(status_code=402, detail="Este paquete es de pago")
+    if datos.apariencia not in APARIENCIAS:
+        raise HTTPException(status_code=422, detail="Vigilante no válido")
+
     distraido = calcular_tiempo_distraido(datos.distracciones, datos.duracion_real)
     concentrado = max(datos.duracion_real - distraido, 0)
 
     sesion = SesionEstudio(
         dispositivo_id=datos.dispositivo_id,
         modo=datos.modo,
+        paquete=paquete["id"],
+        apariencia=datos.apariencia,
+        microfono=datos.microfono,
         severidad=datos.severidad,
         duracion_planeada=datos.duracion_planeada,
         duracion_real=datos.duracion_real,
@@ -47,6 +60,7 @@ def historial(dispositivo_id: str = Query(min_length=8, max_length=64), bd: Sess
         ResumenSesion(
             id=s.id,
             modo=s.modo,
+            paquete=s.paquete,
             fecha=s.fecha,
             duracion_real=s.duracion_real,
             tiempo_concentrado=s.tiempo_concentrado,

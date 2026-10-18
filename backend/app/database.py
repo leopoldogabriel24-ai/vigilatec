@@ -1,5 +1,5 @@
 # Conexión con la base de datos.
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, inspect, text
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
 from .config import DATABASE_URL
@@ -22,3 +22,26 @@ def obtener_bd():
         yield bd
     finally:
         bd.close()
+
+
+def actualizar_tablas():
+    """Crea las tablas y agrega columnas nuevas a bases de datos antiguas, sin borrar datos.
+    Devuelve la lista de columnas agregadas, como (tabla, columna)."""
+    agregadas = []
+    Base.metadata.create_all(motor)
+    inspector = inspect(motor)
+    for tabla in Base.metadata.sorted_tables:
+        existentes = {c["name"] for c in inspector.get_columns(tabla.name)}
+        for columna in tabla.columns:
+            if columna.name in existentes:
+                continue
+            tipo = columna.type.compile(motor.dialect)
+            defecto = columna.default.arg if columna.default is not None and not callable(columna.default.arg) else None
+            sql = f'ALTER TABLE {tabla.name} ADD COLUMN {columna.name} {tipo}'
+            if defecto is not None:
+                valor = int(defecto) if isinstance(defecto, bool) else defecto
+                sql += f" DEFAULT '{valor}'" if isinstance(valor, str) else f" DEFAULT {valor}"
+            with motor.begin() as conexion:
+                conexion.execute(text(sql))
+            agregadas.append((tabla.name, columna.name))
+    return agregadas

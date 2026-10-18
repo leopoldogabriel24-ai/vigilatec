@@ -3,13 +3,18 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
 from .config import CARPETA_FRONTEND
-from .database import Base, motor
-from .rutas import sesiones
+from sqlalchemy import text
 
-# Crea las tablas si todavía no existen
-Base.metadata.create_all(motor)
+from .database import actualizar_tablas, motor
+from .rutas import paquetes, sesiones
 
-app = FastAPI(title="VigilaTec API", version="0.1.0")
+# Crea las tablas (o agrega columnas nuevas) si hace falta
+if ("sesiones", "paquete") in actualizar_tablas():
+    # Sesiones anteriores a los paquetes: el paquete es el mismo que su modo
+    with motor.begin() as conexion:
+        conexion.execute(text("UPDATE sesiones SET paquete = modo"))
+
+app = FastAPI(title="VigilaTec API", version="0.2.0")
 
 
 @app.get("/api/salud")
@@ -20,6 +25,7 @@ def salud():
 
 # --- Módulos de la API ---
 app.include_router(sesiones.router)
+app.include_router(paquetes.router)
 # Próximas fases (cada una será un archivo nuevo en app/rutas/):
 #   app.include_router(cuentas.router)      -> registro e inicio de sesión
 #   app.include_router(grupos.router)       -> escuelas y salones

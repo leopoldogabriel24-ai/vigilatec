@@ -41,6 +41,9 @@ def construir_informe(sesion: SesionEstudio) -> dict:
     return {
         "id": sesion.id,
         "modo": sesion.modo,
+        "paquete": sesion.paquete,
+        "apariencia": sesion.apariencia,
+        "microfono": sesion.microfono,
         "severidad": sesion.severidad,
         "fecha": sesion.fecha,
         "duracion_planeada": sesion.duracion_planeada,
