@@ -6,7 +6,7 @@ import { callarVoz, tocarEfecto, tocarVoz } from "./efectos.js";
 // Índices de las voces grabadas: { personaje: Promise<{ texto: archivo }> }
 const indicesVoz = {};
 function indiceDe(id) {
-  indicesVoz[id] ??= fetch(`audio/voces/${id}/indice.json`).then((r) => (r.ok ? r.json() : {})).catch(() => ({}));
+  indicesVoz[id] ??= fetch(`audio/voces/${id}/indice.json`, { cache: "no-cache" }).then((r) => (r.ok ? r.json() : {})).catch(() => ({}));
   return indicesVoz[id];
 }
 

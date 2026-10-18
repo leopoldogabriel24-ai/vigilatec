@@ -5,8 +5,9 @@
 //   npm pack mespeak@2.0.2 && tar xzf mespeak-2.0.2.tgz   (crea la carpeta "package")
 // Uso:
 //   MESPEAK_DIR=/ruta/a/package node herramientas/generar_voces.mjs [id ...]
-import { execFileSync } from "node:child_process";
-import { mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { execFileSync, spawnSync } from "node:child_process";
+import { createHash } from "node:crypto";
+import { mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
@@ -18,6 +19,7 @@ const { MENSAJES } = await import(join(RAIZ, "frontend/js/config.js"));
 
 // Voz base del sintetizador y efectos de ffmpeg de cada personaje
 const VOCES = {
+  // Nota: tras "vibrato" siempre va "aformat=sample_fmts=s16" (sin eso, ffmpeg puede dejar la voz en silencio)
   // Señor oscuro: bajo profundo, lento y pausado, voz "grande" dentro de un casco metálico
   penumbra: {
     variante: "m4", tono: 15, velocidad: 118, palabras: 2,
@@ -33,8 +35,8 @@ const VOCES = {
   // Guerrero: grave, rápido y gritado. Voz base "Klatt" (más natural), temblor leve y saturación cálida de garganta
   ares: {
     variante: "klatt2", tono: 32, velocidad: 158, amplitud: 150,
-    capas: ["rubberband=pitch=0.82:formant=shifted,vibrato=f=0.8:d=0.18,vibrato=f=5.5:d=0.06",
-      "rubberband=pitch=0.81:formant=shifted,vibrato=f=0.7:d=0.18,vibrato=f=4.7:d=0.08,adelay=12,volume=0.5"],
+    capas: ["rubberband=pitch=0.82:formant=shifted,vibrato=f=0.8:d=0.18,aformat=sample_fmts=s16,vibrato=f=5.5:d=0.06,aformat=sample_fmts=s16",
+      "rubberband=pitch=0.81:formant=shifted,vibrato=f=0.7:d=0.18,aformat=sample_fmts=s16,vibrato=f=4.7:d=0.08,aformat=sample_fmts=s16,adelay=12,volume=0.5"],
     filtro: "highpass=f=80,lowpass=f=3900,equalizer=f=250:t=q:w=1:g=6,equalizer=f=1800:t=q:w=1:g=3,"
       + "volume=3,asoftclip=type=tanh:threshold=0.5,aecho=0.5:0.25:55:0.15,deesser,dynaudnorm=f=150:g=7",
   },
@@ -42,7 +44,7 @@ const VOCES = {
   buho: {
     variante: "whisper", tono: 20, velocidad: 125,
     capas: ["rubberband=pitch=0.85,highpass=f=300,volume=2.4",
-      "rubberband=pitch=0.62:formant=shifted,vibrato=f=0.6:d=0.2,vibrato=f=4.5:d=0.05,volume=0.5,lowpass=f=900"],
+      "rubberband=pitch=0.62:formant=shifted,vibrato=f=0.6:d=0.2,aformat=sample_fmts=s16,vibrato=f=4.5:d=0.05,aformat=sample_fmts=s16,volume=0.5,lowpass=f=900"],
     filtro: "highpass=f=90,lowpass=f=6000,equalizer=f=3200:t=q:w=1:g=4,volume=2,asoftclip=type=atan:threshold=0.4,"
       + "aecho=0.5:0.2:22:0.1,deesser,dynaudnorm=f=150:g=8",
     segundaVariante: "klatt2",
@@ -50,8 +52,9 @@ const VOCES = {
   // Ojo de fuego: gravísimo y muy lento, varias voces y un eco que crece
   ojo: {
     variante: "m4", tono: 5, velocidad: 100, palabras: 3,
-    capas: ["rubberband=pitch=0.5:formant=shifted", "rubberband=pitch=0.45:formant=shifted,adelay=40", "rubberband=pitch=0.6,adelay=20,volume=0.6"],
-    filtro: "lowpass=f=2200,aecho=0.8:0.75:140|300|520:0.45|0.35|0.25,dynaudnorm=f=150:g=9",
+    // Una capa menos grave para que se oiga en bocinas pequeñas (laptop y celular)
+    capas: ["rubberband=pitch=0.5:formant=shifted", "rubberband=pitch=0.45:formant=shifted,adelay=40", "rubberband=pitch=0.72,adelay=20,volume=1.4"],
+    filtro: "highpass=f=110,lowpass=f=3200,equalizer=f=1200:t=q:w=1:g=7,aecho=0.8:0.75:140|300|520:0.45|0.35|0.25,dynaudnorm=f=150:g=9",
   },
 };
 
@@ -105,7 +108,16 @@ for (const id of ids) {
       : voz.filtro;
     execFileSync("ffmpeg", ["-y", "-loglevel", "error", ...entradas, "-filter_complex", grafo,
       "-ac", "1", "-ar", "24000", "-codec:a", "libmp3lame", "-b:a", "40k", join(salida, archivo)]);
-    indice[texto] = archivo;
+    // Revisión automática: el volumen promedio debe ser de voz normal (ni silencio ni ruido saturado)
+    const volumen = spawnSync("ffmpeg", ["-hide_banner", "-i", join(salida, archivo), "-af", "volumedetect", "-f", "null", "-"],
+      { encoding: "utf8" }).stderr.match(/mean_volume: (-?[\d.]+)/);
+    const db = volumen ? Number(volumen[1]) : -99;
+    if (db > -8 || db < -40) throw new Error(`${id}/${archivo}: volumen anormal (${db} dB) en "${texto}"`);
+    // La "huella" del contenido va en el nombre: si el audio cambia, el navegador no usa una copia vieja guardada
+    const huella = createHash("sha1").update(readFileSync(join(salida, archivo))).digest("hex").slice(0, 8);
+    const definitivo = archivo.replace(".mp3", `-${huella}.mp3`);
+    renameSync(join(salida, archivo), join(salida, definitivo));
+    indice[texto] = definitivo;
   });
   writeFileSync(join(salida, "indice.json"), JSON.stringify(indice, null, 1));
   console.log(`${id}: ${Object.keys(indice).length} frases`);
