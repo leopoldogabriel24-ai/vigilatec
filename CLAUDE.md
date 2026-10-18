@@ -20,4 +20,7 @@ Render publica solo lo que está en la rama `main` de GitHub (leopoldogabriel24-
 - En el ranking solo se muestra el apodo; nunca correos, nombres reales ni edades.
 - Asistente de IA: la clave ANTHROPIC_API_KEY solo vive en Render; nunca en el código. No guardar preguntas ni respuestas,
   ni enviar a la IA nombre, correo o ID del estudiante. Respetar los límites diarios de uso.
+- DECISIÓN DEL DUEÑO: el asistente está APAGADO por ahora (sin pagos). Se oculta solo mientras no exista
+  ANTHROPIC_API_KEY. No activarlo ni cambiarlo a otro proveedor de IA sin preguntar antes
+  (los planes gratuitos como Gemini usan los datos para entrenar y no son adecuados para menores).
 - No romper lo que ya funciona: probar con el navegador automático antes de decir que algo está listo.
