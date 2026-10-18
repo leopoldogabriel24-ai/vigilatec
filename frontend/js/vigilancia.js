@@ -9,7 +9,7 @@ export class Vigilancia {
    */
   constructor(modo, severidad, alAvisar) {
     this.config = MODOS[modo];
-    this.factor = SEVERIDAD[severidad];
+    this.severidad = SEVERIDAD[severidad];
     this.alAvisar = alAvisar;
     this.distracciones = [];   // distracciones ya terminadas
     this.actual = null;        // conducta que está pasando ahora {tipo, desde, contada, ultimoAviso, nivel}
@@ -52,13 +52,13 @@ export class Vigilancia {
     const duracion = seg - a.desde;
 
     // Primera vez que pasa el límite: cuenta como distracción y se avisa
-    if (!a.contada && duracion >= umbral * this.factor) {
+    if (!a.contada && duracion >= umbral * this.severidad.factor) {
       a.contada = true;
       this.conteo[tipo] = (this.conteo[tipo] ?? 0) + 1;
       a.nivel = this.nivelPara(tipo);
       a.ultimoAviso = seg;
       this.alAvisar(tipo, a.nivel);
-    } else if (a.contada && seg - a.ultimoAviso >= DETECCION.repetirAvisoSeg) {
+    } else if (a.contada && seg - a.ultimoAviso >= this.severidad.repetirSeg) {
       // Sigue distraído: el aviso se repite y sube de nivel
       a.nivel = Math.min(3, a.nivel + 1);
       a.ultimoAviso = seg;
@@ -69,7 +69,8 @@ export class Vigilancia {
   /** Nivel del aviso: sube con las veces que se repite la misma distracción. */
   nivelPara(tipo) {
     const n = this.conteo[tipo];
-    const nivel = n <= 1 ? 1 : n <= 3 ? 2 : 3;
+    const base = n <= 1 ? 1 : n <= 3 ? 2 : 3;
+    const nivel = Math.min(3, Math.max(1, base + this.severidad.ajusteNivel));  // la severidad sube o baja el tono
     return Math.max(nivel, this.config.nivelMinimo);
   }
 

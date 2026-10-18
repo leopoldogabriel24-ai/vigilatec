@@ -1,8 +1,10 @@
 // Archivo principal: maneja las pantallas y el flujo de la sesión.
-import { MODOS, DETECCION, NOMBRES_TIPO } from "./config.js";
+import { MODOS, DETECCION, NOMBRES_TIPO, SEVERIDAD } from "./config.js";
 import { Detector } from "./detector.js";
 import { Vigilancia } from "./vigilancia.js";
 import { Vigilante } from "./vigilante.js";
+import { VIGILANTES } from "./vigilantes.js";
+import { cargarPreferencias, guardarPreferencias } from "./preferencias.js";
 import { Temporizador, formatoReloj, formatoDuracion } from "./temporizador.js";
 import * as api from "./api.js";
 
@@ -14,6 +16,52 @@ let paquete = null;    // paquete elegido
 let sesion = null;     // datos de la sesión en curso
 
 const vigilante = new Vigilante($("vigilante"), $("mensaje"));
+const valorMarcado = (nombre) => document.querySelector(`input[name=${nombre}]:checked`)?.value;
+
+// ---------- Personalización del vigilante ----------
+function crearSelectorVigilantes() {
+  const caja = $("cfg-vigilantes");
+  for (const v of VIGILANTES) {
+    const l = document.createElement("label");
+    l.className = "opcion-vigilante";
+    l.innerHTML = `<input type="radio" name="apariencia" value="${v.id}">
+      <svg class="vigilante nivel-0 ap-${v.id}" viewBox="0 0 200 200" aria-hidden="true">${v.svg}</svg>
+      <b></b><small></small>`;
+    l.querySelector("b").textContent = v.nombre;
+    l.querySelector("small").textContent = v.descripcion;
+    caja.appendChild(l);
+  }
+}
+crearSelectorVigilantes();
+
+function describirSeveridad() {
+  $("cfg-severidad-desc").textContent = SEVERIDAD[valorMarcado("severidad")]?.descripcion ?? "";
+}
+
+// Cada cambio se recuerda al instante para la próxima visita
+document.addEventListener("change", (e) => {
+  const { name, value, checked } = e.target;
+  if (name === "apariencia") guardarPreferencias({ apariencia: value });
+  if (name === "severidad") { describirSeveridad(); if (!paquete?.severidad_fija) guardarPreferencias({ severidad: value }); }
+  if (e.target.id === "cfg-voz") guardarPreferencias({ voz: checked });
+});
+
+/** Aplica en la pantalla de configuración lo que el estudiante eligió la última vez. */
+function aplicarPreferencias(p) {
+  const pref = cargarPreferencias();
+  const marcar = (nombre, valor) => {
+    const r = document.querySelector(`input[name=${nombre}][value="${valor}"]`);
+    if (r) r.checked = true;
+    return !!r;
+  };
+  if (!marcar("apariencia", pref.apariencia)) marcar("apariencia", VIGILANTES[0].id);
+  if (!p.severidad_fija) marcar("severidad", pref.severidad);
+  $("cfg-voz").checked = pref.voz;
+  const min = pref.minutos[p.id];
+  if (p.duraciones) { if (min) marcar("duracion", min); }
+  else if (min >= 1 && min <= 360) $("cfg-minutos").value = min;
+  describirSeveridad();
+}
 
 // ---------- Navegación entre pantallas ----------
 function mostrar(nombre) {
@@ -92,6 +140,7 @@ function elegirPaquete(p) {
   $("cfg-severidad-nota").textContent = p.severidad_fija
     ? "En este paquete el vigilante siempre es estricto, como en un examen real."
     : "";
+  aplicarPreferencias(p);
   mostrar("config");
 }
 
@@ -102,7 +151,7 @@ $("btn-comenzar").addEventListener("click", comenzar);
 
 async function comenzar() {
   const minutos = paquete.duraciones
-    ? Number(document.querySelector("input[name=duracion]:checked")?.value)
+    ? Number(valorMarcado("duracion"))
     : Math.round(Number($("cfg-minutos").value));
   if (!(minutos >= 1 && minutos <= 360)) return mostrarError("Escribe una duración entre 1 y 360 minutos.");
 
@@ -127,12 +176,15 @@ async function comenzar() {
     boton.textContent = "Activar cámara y comenzar";
   }
 
-  const severidad = document.querySelector("input[name=severidad]:checked").value;
+  const severidad = valorMarcado("severidad");
+  const apariencia = valorMarcado("apariencia") ?? VIGILANTES[0].id;
   vigilante.voz = $("cfg-voz").checked;
+  vigilante.usar(apariencia);
+  guardarPreferencias({ minutos: { ...cargarPreferencias().minutos, [paquete.id]: minutos } });
 
   const modo = paquete.modo;
   sesion = {
-    modo, paquete: paquete.id, severidad, minutos, detector,
+    modo, paquete: paquete.id, severidad, apariencia, minutos, detector,
     temporizador: new Temporizador(minutos * 60),
     vigilancia: new Vigilancia(modo, severidad, (tipo, nivel) => {
       vigilante.advertir(tipo, nivel);
@@ -188,7 +240,7 @@ function ciclo() {
     if (performance.now() - s.calibInicio >= DETECCION.calibracionSeg * 1000 && s.detector.terminarCalibracion()) {
       s.temporizador.iniciar();
       s.ultimoAnimo = performance.now();
-      const texto = s.modo === "examen" ? "El examen comienza ahora. Mucha suerte." : "Comienza tu sesión de estudio. ¡A concentrarse!";
+      const texto = vigilante.frase(s.modo === "examen" ? "inicioExamen" : "inicioEstudio");
       vigilante.mostrar(texto, 0);
       vigilante.hablar(texto, 0);
     }
@@ -203,7 +255,7 @@ function ciclo() {
   // Si todo va bien desde hace 4 s, el vigilante se calma
   const ahora = performance.now();
   if (!s.vigilancia.distraido && s.vigilancia.actual === null && ahora - s.ultimoAviso > 4000) {
-    if (!$("vigilante").classList.contains("nivel-0")) vigilante.calma();
+    if (vigilante.nivel !== 0) vigilante.calma();
     const cada = MODOS[s.modo].animoCadaSeg;
     if (cada && ahora - s.ultimoAnimo > cada * 1000) {
       vigilante.animar();
@@ -264,6 +316,7 @@ async function finalizar() {
     dispositivo_id: api.idDispositivo(),
     modo: s.modo,
     paquete: s.paquete,
+    apariencia: s.apariencia,
     severidad: s.severidad,
     duracion_planeada: s.minutos * 60,
     duracion_real: seg,

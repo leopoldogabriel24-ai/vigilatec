@@ -19,8 +19,24 @@ export const MODOS = {
   },
 };
 
-// Multiplica los umbrales: "suave" tolera más, "estricto" tolera menos.
-export const SEVERIDAD = { suave: 1.6, normal: 1, estricto: 0.6 };
+// Severidad del vigilante: cambia la frecuencia y el tono de los avisos.
+//   factor:     multiplica los segundos de tolerancia (más alto = tolera más)
+//   repetirSeg: cada cuántos segundos repite el aviso si sigues distraído
+//   ajusteNivel: sube o baja el tono del mensaje (1 = suave, 3 = severo)
+export const SEVERIDAD = {
+  suave: {
+    factor: 1.6, repetirSeg: 12, ajusteNivel: -1,
+    descripcion: "Te da más tiempo antes de avisarte, repite poco y habla con calma.",
+  },
+  normal: {
+    factor: 1, repetirSeg: 8, ajusteNivel: 0,
+    descripcion: "Avisos equilibrados: ni muy pacientes ni muy duros.",
+  },
+  estricto: {
+    factor: 0.6, repetirSeg: 5, ajusteNivel: 1,
+    descripcion: "Avisa enseguida, repite seguido y con tono firme.",
+  },
+};
 
 // Sensibilidad de la detección por cámara.
 export const DETECCION = {
@@ -32,7 +48,6 @@ export const DETECCION = {
   ventanaMovSeg: 1.5,      // segundos que se usan para medir el movimiento
   alejadoMin: 0.55,        // si la cara se ve menor a 55% de lo normal, te alejaste o te paraste
   graciaSeg: 1,            // segundos "bien" necesarios para dar por terminada una distracción
-  repetirAvisoSeg: 8,      // si la distracción sigue, se repite el aviso cada 8 s (más fuerte)
   cadaMs: 100,             // analizar la cámara 10 veces por segundo
 };
 

@@ -1,56 +1,88 @@
 // Vigilante: el personaje en pantalla, sus expresiones, mensajes y voz.
-import { MENSAJES, MENSAJE_CALMA, ANIMO } from "./config.js";
+import { MENSAJES } from "./config.js";
+import { VIGILANTES, VIGILANTE_POR_ID } from "./vigilantes.js";
 
-const azar = (lista) => lista[Math.floor(Math.random() * lista.length)];
+const azar = (lista) => (Array.isArray(lista) ? lista[Math.floor(Math.random() * lista.length)] : lista);
+
+// Pistas para elegir una voz de hombre o de mujer según su nombre (depende del dispositivo)
+const VOCES_MUJER = /paulina|m[oó]nica|helena|laura|sabina|elvira|dalia|luc[ií]a|marisol|female|mujer/i;
+const VOCES_HOMBRE = /jorge|juan|diego|pablo|ra[uú]l|[aá]lvaro|enrique|carlos|male|hombre/i;
 
 export class Vigilante {
   constructor(svg, globo) {
     this.svg = svg;
     this.globo = globo;
     this.voz = true;
-    this.vozEspanol = null;
-    // Las voces del navegador cargan un poco después
+    this.nivel = 0;
+    this.voces = [];
     if ("speechSynthesis" in window) {
-      const elegir = () => {
-        const voces = speechSynthesis.getVoices();
-        this.vozEspanol = voces.find((v) => v.lang === "es-MX") ?? voces.find((v) => v.lang.startsWith("es")) ?? null;
-      };
-      elegir();
-      speechSynthesis.addEventListener?.("voiceschanged", elegir);
+      // Las voces del navegador cargan un poco después
+      const cargar = () => { this.voces = speechSynthesis.getVoices().filter((v) => v.lang.startsWith("es")); };
+      cargar();
+      speechSynthesis.addEventListener?.("voiceschanged", cargar);
     }
+    this.usar(VIGILANTES[0].id);
+  }
+
+  /** Cambia el personaje (dibujo, voz y forma de hablar). */
+  usar(id) {
+    this.personaje = VIGILANTE_POR_ID[id] ?? VIGILANTES[0];
+    this.svg.innerHTML = this.personaje.svg;
+    this.svg.setAttribute("aria-label", `Vigilante: ${this.personaje.nombre}`);
+    this.pintarNivel(this.nivel);
+  }
+
+  pintarNivel(nivel) {
+    this.nivel = nivel;
+    this.svg.setAttribute("class", `vigilante nivel-${nivel} ap-${this.personaje.id}`);
   }
 
   /** Cambia la expresión (0 = tranquilo, 3 = muy serio) y el texto del globo. */
   mostrar(texto, nivel, { positivo = false } = {}) {
-    this.svg.setAttribute("class", `vigilante nivel-${nivel}`);
+    this.pintarNivel(nivel);
     this.globo.className = `globo nivel-${nivel}${positivo ? " positivo" : ""}`;
     this.globo.textContent = texto;
   }
 
-  /** Advertencia por una distracción. */
-  advertir(tipo, nivel) {
-    const texto = azar(MENSAJES[tipo][nivel]);
+  /** Advertencia por una distracción, con el tono del personaje. */
+  advertir(tipoMensaje, nivel) {
+    const texto = this.personaje.decorar(azar(MENSAJES[tipoMensaje][nivel]), nivel);
     this.mostrar(texto, nivel);
     this.hablar(texto, nivel);
   }
 
-  calma() { this.mostrar(MENSAJE_CALMA, 0); }
+  /** Frase propia del personaje (inicio, calma, ánimo). */
+  frase(clave) { return azar(this.personaje.frases[clave]); }
+
+  calma() { this.mostrar(this.frase("calma"), 0); }
 
   animar() {
-    const texto = azar(ANIMO);
+    const texto = this.frase("animo");
     this.mostrar(texto, 0, { positivo: true });
     this.hablar(texto, 0);
+  }
+
+  /** Elige la voz del dispositivo que mejor le queda al personaje. */
+  elegirVoz() {
+    const { genero } = this.personaje.voz;
+    const filtro = genero === "f" ? VOCES_MUJER : genero === "m" ? VOCES_HOMBRE : null;
+    const mexicana = (v) => v.lang === "es-MX";
+    return (filtro && (this.voces.find((v) => filtro.test(v.name) && mexicana(v)) ?? this.voces.find((v) => filtro.test(v.name))))
+      ?? this.voces.find(mexicana) ?? this.voces[0] ?? null;
   }
 
   /** Lee el mensaje en voz alta (más grave y lento si es severo). */
   hablar(texto, nivel) {
     if (!this.voz || !("speechSynthesis" in window)) return;
     speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(texto);
-    u.lang = this.vozEspanol?.lang ?? "es-MX";
-    if (this.vozEspanol) u.voice = this.vozEspanol;
-    u.rate = nivel >= 3 ? 0.9 : 1;
-    u.pitch = nivel >= 2 ? 0.8 : 1;
+    // Las palabras en MAYÚSCULAS se pasan a minúsculas para que la voz no las deletree
+    const u = new SpeechSynthesisUtterance(texto.replace(/[A-ZÁÉÍÓÚÑÜ]{2,}/g, (p) => p.toLowerCase()));
+    const voz = this.elegirVoz();
+    u.lang = voz?.lang ?? "es-MX";
+    if (voz) u.voice = voz;
+    const { tono, velocidad } = this.personaje.voz;
+    u.pitch = Math.max(0.1, Math.min(2, tono * (nivel >= 2 ? 0.9 : 1)));
+    u.rate = velocidad * (nivel >= 3 ? 0.92 : 1);
     speechSynthesis.speak(u);
   }
 

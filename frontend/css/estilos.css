@@ -127,20 +127,45 @@ main { flex: 1; width: 100%; max-width: 1100px; margin: 0 auto; padding: 2rem 16
 .concentracion-vivo { text-align: center; margin: 0; color: var(--texto-suave); }
 .concentracion-vivo b { color: var(--texto); }
 
-/* ===== Vigilante (personaje del logo) ===== */
+/* ===== Selector de vigilante ===== */
+.selector-vigilantes { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: .6rem; }
+.opcion-vigilante { position: relative; display: flex; flex-direction: column; align-items: center; text-align: center; gap: .2rem; padding: .6rem .4rem; border: 2px solid var(--borde); border-radius: 12px; cursor: pointer; transition: border-color .15s, background .15s; }
+.opcion-vigilante input { position: absolute; opacity: 0; }
+.opcion-vigilante svg { width: 72px; height: 72px; }
+.opcion-vigilante b { font-size: .85rem; color: var(--azul); line-height: 1.2; }
+.opcion-vigilante small { font-size: .72rem; color: var(--texto-suave); line-height: 1.25; }
+.opcion-vigilante:hover { border-color: var(--azul); }
+.opcion-vigilante:has(input:checked) { border-color: var(--azul); background: var(--azul-tenue); box-shadow: inset 0 0 0 1px var(--azul); }
+.opcion-vigilante:has(input:focus-visible) { outline: 2px solid var(--azul-oscuro); outline-offset: 2px; }
+
+/* ===== Vigilantes (dibujos) ===== */
 .vigilante { width: min(300px, 70vw); height: auto; }
 .vigilante .halo { fill: var(--azul-tenue); stroke: var(--azul); stroke-width: 2; transition: fill .3s, stroke .3s; }
-.vigilante .lente { fill: var(--blanco); stroke: var(--azul); stroke-width: 7; transition: stroke .3s; }
-.vigilante .patilla, .vigilante .puente, .vigilante .cuerpo { fill: none; stroke: var(--azul); stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; transition: stroke .3s; }
-.vigilante .pupila { fill: var(--azul); }
-.vigilante .brillo { fill: var(--blanco); }
-.vigilante .corbata { fill: var(--azul); transition: fill .3s; }
+.vigilante .trazo { fill: none; stroke: var(--azul); stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; transition: stroke .3s; }
+.vigilante .trazo.fino { stroke-width: 3.5; }
+.vigilante .lente { fill: var(--blanco); }
+.vigilante .trazo.fino.lente { fill: rgba(255, 255, 255, .35); }
+.vigilante .relleno { fill: var(--azul); transition: fill .3s; }
+.vigilante .relleno-oscuro { fill: var(--azul-oscuro); }
+.vigilante .blanco { fill: var(--blanco); }
+.vigilante .piel { fill: #f1d3b3; }
+.vigilante .pelo-gris { fill: #8e9aa6; }
+.vigilante .pelo-cafe { fill: #5a3b2a; }
+.vigilante .mejilla { fill: #f08f8f; opacity: .55; }
+.vigilante .metal { fill: #dce6f0; stroke: var(--azul); stroke-width: 3; }
+.vigilante .pantalla { fill: var(--azul-oscuro); }
+.vigilante .dorado { fill: #d4a72c; }
+.vigilante .pupila { fill: var(--azul-oscuro); transition: fill .3s; }
+.vigilante .pupila.luz { fill: #6fe0ff; }
 .vigilante .ceja, .vigilante .boca { stroke: var(--azul-oscuro); stroke-width: 6; stroke-linecap: round; fill: none; transition: transform .3s, stroke .3s; }
+.vigilante .ceja.gruesa { stroke-width: 9; }
 .vigilante .ceja { transform-box: fill-box; transform-origin: center; }
 .vigilante .pupilas { animation: observar 6s ease-in-out infinite; }
-@keyframes observar { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-9px); } 60% { transform: translateX(9px); } }
+@keyframes observar { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 60% { transform: translateX(5px); } }
+.vigilante.ap-vigilatec .pupilas { animation-name: observar-amplio; }
+@keyframes observar-amplio { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-9px); } 60% { transform: translateX(9px); } }
 
-/* Expresiones según el nivel de severidad */
+/* Expresiones según el nivel de severidad (iguales para todos los personajes) */
 .vigilante.nivel-1 .ceja.izq { transform: rotate(10deg); }
 .vigilante.nivel-1 .ceja.der { transform: rotate(-10deg); }
 .vigilante.nivel-2 .ceja.izq { transform: rotate(18deg) translateY(4px); }
@@ -149,8 +174,8 @@ main { flex: 1; width: 100%; max-width: 1100px; margin: 0 auto; padding: 2rem 16
 .vigilante.nivel-3 .ceja.izq { transform: rotate(26deg) translateY(6px); }
 .vigilante.nivel-3 .ceja.der { transform: rotate(-26deg) translateY(6px); }
 .vigilante.nivel-3 .halo { fill: var(--rojo-fondo); stroke: var(--rojo); }
-.vigilante.nivel-3 .lente, .vigilante.nivel-3 .patilla, .vigilante.nivel-3 .puente, .vigilante.nivel-3 .cuerpo { stroke: var(--rojo); }
-.vigilante.nivel-3 .corbata, .vigilante.nivel-3 .pupila { fill: var(--rojo); }
+.vigilante.nivel-3 .trazo, .vigilante.nivel-3 .metal { stroke: var(--rojo); }
+.vigilante.nivel-3 .relleno, .vigilante.nivel-3 .pupila { fill: var(--rojo); }
 .vigilante.nivel-3 .ceja, .vigilante.nivel-3 .boca { stroke: var(--rojo); }
 .vigilante.nivel-3 { animation: sacudir .4s; }
 .vigilante.nivel-2 .boca, .vigilante.nivel-3 .boca { transform: translateY(2px) scaleY(-1); transform-box: fill-box; transform-origin: center; }

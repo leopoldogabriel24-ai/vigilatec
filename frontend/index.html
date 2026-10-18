@@ -48,12 +48,18 @@
         </div>
 
         <div class="campo">
+          <span>Elige a tu vigilante</span>
+          <div id="cfg-vigilantes" class="selector-vigilantes" role="radiogroup" aria-label="Vigilante"></div>
+        </div>
+
+        <div class="campo">
           <span>Severidad del vigilante</span>
           <div class="segmentos" role="radiogroup">
             <label><input type="radio" name="severidad" value="suave"><span>Suave</span></label>
             <label><input type="radio" name="severidad" value="normal" checked><span>Normal</span></label>
             <label><input type="radio" name="severidad" value="estricto"><span>Estricto</span></label>
           </div>
+          <p id="cfg-severidad-desc" class="nota"></p>
           <p id="cfg-severidad-nota" class="nota"></p>
         </div>
 
@@ -87,25 +93,7 @@
         <div class="zona-vigilante">
           <!-- Dibujo del vigilante: cambia de expresión según el nivel -->
           <svg id="vigilante" class="vigilante nivel-0" viewBox="0 0 200 200" role="img" aria-label="Vigilante">
-            <circle class="halo" cx="100" cy="100" r="92"/>
-            <!-- Personaje del logo: lentes con ojos, cuello y corbata -->
-            <g class="cejas">
-              <path class="ceja izq" d="M50 52 L82 52"/>
-              <path class="ceja der" d="M118 52 L150 52"/>
-            </g>
-            <path class="patilla" d="M40 74 Q30 70 27 52 M160 74 Q170 70 173 52"/>
-            <rect class="lente" x="38" y="66" width="56" height="48" rx="10"/>
-            <rect class="lente" x="106" y="66" width="56" height="48" rx="10"/>
-            <path class="puente" d="M94 84 Q100 78 106 84"/>
-            <g class="pupilas">
-              <circle class="pupila" cx="66" cy="92" r="9"/>
-              <circle class="pupila" cx="134" cy="92" r="9"/>
-              <circle class="brillo" cx="69" cy="89" r="3"/>
-              <circle class="brillo" cx="137" cy="89" r="3"/>
-            </g>
-            <path class="cuerpo" d="M60 114 V140 H84 V176 H116 V140 H140 V114"/>
-            <path class="boca" d="M90 122 Q100 130 110 122"/>
-            <path class="corbata" d="M100 132 L94 142 L100 170 L106 142 Z"/>
+            <!-- El dibujo del personaje elegido se pone aquí (ver js/vigilantes.js) -->
           </svg>
           <div id="mensaje" class="globo nivel-0" aria-live="assertive">Preparando la cámara…</div>
         </div>
