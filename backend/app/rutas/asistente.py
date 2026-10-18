@@ -77,6 +77,12 @@ def devolver(bd: Session, uso: UsoAsistente, costo: int) -> None:
     bd.commit()
 
 
+@router.get("/disponible")
+def ver_disponible():
+    """¿Está configurado el asistente? (público: la página lo usa para mostrar u ocultar el botón)."""
+    return {"disponible": asistente.disponible()}
+
+
 @router.get("/estado")
 def ver_estado(usuario: Usuario = Depends(usuario_requerido), bd: Session = Depends(obtener_bd)):
     return estado(bd, usuario)

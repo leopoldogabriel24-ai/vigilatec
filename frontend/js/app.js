@@ -14,7 +14,7 @@ import { graficaColumnas } from "./graficas.js";
 import "./cuentas.js";   // registro, entrar y "Mi cuenta"
 import "./ranking.js";   // ranking de salón y escuela
 import "./admin.js";     // pantalla del administrador
-import { generarPractica } from "./asistente.js";   // asistente académico con IA
+import { generarPractica, iaDisponible } from "./asistente.js";   // asistente académico con IA
 
 const $ = (id) => document.getElementById(id);
 
@@ -216,7 +216,7 @@ async function comenzar() {
   const tema = $("cfg-tema").value.trim();
   guardarPreferencias({ minutos: { ...cargarPreferencias().minutos, [paquete.id]: minutos }, tema });
   // Preguntas de práctica durante la sesión (solo si escribió un tema y tiene cuenta)
-  $("sesion-practica").hidden = !tema || !usuarioActual();
+  $("sesion-practica").hidden = !tema || !usuarioActual() || !iaDisponible;
   $("practica-sesion-lista").replaceChildren();
 
   const modo = paquete.modo;
@@ -386,7 +386,7 @@ async function finalizar() {
   }
   pintarInforme(inf);
   // Al terminar: invitar a practicar con preguntas sobre lo que estudió
-  $("inf-practica").hidden = !s.tema;
+  $("inf-practica").hidden = !s.tema || !iaDisponible;
   $("inf-tema").textContent = s.tema;
   $("practica-informe-lista").replaceChildren();
   temaInforme = s.tema;

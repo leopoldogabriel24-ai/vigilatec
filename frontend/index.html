@@ -20,7 +20,7 @@
     </button>
     <nav class="menu">
       <button class="enlace" data-ir="historial">Mi historial</button>
-      <button class="enlace" data-ir="asistente">Asistente</button>
+      <button class="enlace" data-ir="asistente" data-solo-ia hidden>Asistente</button>
       <button class="enlace" data-ir="ranking" data-solo-cuenta hidden>Ranking</button>
       <button class="enlace" data-ir="admin" data-solo-admin hidden>Mi escuela</button>
       <button class="enlace boton-cuenta" data-ir="entrar" data-sin-cuenta>Entrar</button>
@@ -54,7 +54,7 @@
           <label id="cfg-minutos-libre"><input id="cfg-minutos" type="number" min="1" max="360" step="1" value="25" inputmode="numeric"> minutos</label>
         </div>
 
-        <label class="campo">
+        <label class="campo" data-solo-ia hidden>
           <span>¿Qué vas a estudiar? <small class="opcional">(opcional · para tus preguntas de práctica)</small></span>
           <input id="cfg-tema" maxlength="120" placeholder="Ej. Derivadas, Revolución Mexicana, verbos en inglés">
         </label>

@@ -7,6 +7,13 @@ import { alCambiarUsuario, usuarioActual } from "./usuario.js";
 const $ = (id) => document.getElementById(id);
 let conversacion = [];   // [{ rol: "user" | "assistant", texto }]
 
+// El asistente es opcional: si no hay clave de la API configurada, todo lo relacionado se oculta
+export let iaDisponible = false;
+api.asistenteDisponible().then((r) => {
+  iaDisponible = r.disponible;
+  document.querySelectorAll("[data-solo-ia]").forEach((el) => { el.hidden = !iaDisponible; });
+}).catch(() => {});
+
 // ---------- Formato de las respuestas (Markdown sencillo, seguro) ----------
 const escapar = (t) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 const enLinea = (t) => escapar(t)

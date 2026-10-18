@@ -72,6 +72,7 @@ export const rankingSalon = (periodo, salonId) => pedir(`api/ranking/salon?perio
 export const rankingEscuela = (periodo, escuelaId) => pedir(`api/ranking/escuela?periodo=${periodo}${escuelaId ? `&escuela_id=${escuelaId}` : ""}`);
 
 // Asistente académico (IA)
+export const asistenteDisponible = () => pedir("api/asistente/disponible");
 export const asistenteEstado = () => pedir("api/asistente/estado");
 export const preguntarAsistente = (datos) => post("api/asistente/preguntar", datos);
 export const preguntasPractica = (tema, cantidad = 5) => post("api/asistente/practica", { tema, cantidad });
