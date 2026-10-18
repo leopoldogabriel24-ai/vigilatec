@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VigilaTec</title>
+  <meta name="description" content="Estudia con la presión de un examen real. El video nunca sale de tu dispositivo.">
+  <meta name="theme-color" content="#045491">
+  <link rel="icon" type="image/png" href="img/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+  <header class="barra">
+    <button class="marca" data-ir="inicio" aria-label="Ir al inicio">
+      <img src="img/logo-icono.png" alt="" width="38" height="36">
+      <span>vigila<b>tec</b></span>
+    </button>
+    <button class="enlace" data-ir="historial">Mi historial</button>
+  </header>
+
+  <main>
+    <!-- ===== PANTALLA 1: INICIO ===== -->
+    <section id="pantalla-inicio" class="pantalla activa">
+      <img class="logo-grande" src="img/logo-completo.png" alt="VigilaTec — Tecnológico de México, Estudiantes" width="394" height="334">
+      <h1>Estudia con la presión<br>de un examen real</h1>
+      <p class="sub">Un vigilante te observa por la cámara y te avisa cuando te distraes. Tú decides cuánto tiempo y qué tan estricto.</p>
+
+      <div class="tarjetas-modo">
+        <button class="tarjeta-modo" data-modo="examen">
+          <span class="icono">📝</span>
+          <h2>Modo Examen</h2>
+          <p>Simula un examen con tiempo límite y un vigilante estricto. Sin pausas.</p>
+        </button>
+        <button class="tarjeta-modo" data-modo="estudio">
+          <span class="icono">📚</span>
+          <h2>Modo Estudio</h2>
+          <p>Programa tu tiempo de estudio. El vigilante detecta distracciones y te ayuda a no procrastinar.</p>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===== PANTALLA 2: CONFIGURACIÓN Y PERMISO DE CÁMARA ===== -->
+    <section id="pantalla-config" class="pantalla">
+      <h1 id="config-titulo">Modo Examen</h1>
+
+      <div class="panel">
+        <label class="campo">
+          <span>Duración (minutos)</span>
+          <input id="cfg-minutos" type="number" min="1" max="360" step="1" value="60" inputmode="numeric">
+        </label>
+
+        <div class="campo">
+          <span>Severidad del vigilante</span>
+          <div class="segmentos" role="radiogroup">
+            <label><input type="radio" name="severidad" value="suave"><span>Suave</span></label>
+            <label><input type="radio" name="severidad" value="normal" checked><span>Normal</span></label>
+            <label><input type="radio" name="severidad" value="estricto"><span>Estricto</span></label>
+          </div>
+        </div>
+
+        <label class="interruptor">
+          <input id="cfg-voz" type="checkbox" checked>
+          <span>El vigilante habla en voz alta</span>
+        </label>
+      </div>
+
+      <div class="aviso-privacidad">
+        <h3>🔒 Tu privacidad</h3>
+        <ul>
+          <li>Vamos a pedirte permiso para usar la <b>cámara</b>.</li>
+          <li>El video <b>se analiza solo dentro de tu navegador</b>. No se graba, no se guarda y <b>nunca se envía</b> a ningún servidor.</li>
+          <li>Solo se guardan números: tiempo de la sesión y cuántas veces te distrajiste.</li>
+          <li>Puedes apagar la cámara en cualquier momento terminando la sesión.</li>
+        </ul>
+      </div>
+
+      <p id="config-error" class="error" hidden></p>
+
+      <div class="acciones">
+        <button class="boton secundario" data-ir="inicio">Volver</button>
+        <button id="btn-comenzar" class="boton primario">Activar cámara y comenzar</button>
+      </div>
+    </section>
+
+    <!-- ===== PANTALLA 3: SESIÓN CON EL VIGILANTE ===== -->
+    <section id="pantalla-sesion" class="pantalla">
+      <div class="sesion">
+        <div class="zona-vigilante">
+          <!-- Dibujo del vigilante: cambia de expresión según el nivel -->
+          <svg id="vigilante" class="vigilante nivel-0" viewBox="0 0 200 200" role="img" aria-label="Vigilante">
+            <circle class="halo" cx="100" cy="100" r="92"/>
+            <!-- Personaje del logo: lentes con ojos, cuello y corbata -->
+            <g class="cejas">
+              <path class="ceja izq" d="M50 52 L82 52"/>
+              <path class="ceja der" d="M118 52 L150 52"/>
+            </g>
+            <path class="patilla" d="M40 74 Q30 70 27 52 M160 74 Q170 70 173 52"/>
+            <rect class="lente" x="38" y="66" width="56" height="48" rx="10"/>
+            <rect class="lente" x="106" y="66" width="56" height="48" rx="10"/>
+            <path class="puente" d="M94 84 Q100 78 106 84"/>
+            <g class="pupilas">
+              <circle class="pupila" cx="66" cy="92" r="9"/>
+              <circle class="pupila" cx="134" cy="92" r="9"/>
+              <circle class="brillo" cx="69" cy="89" r="3"/>
+              <circle class="brillo" cx="137" cy="89" r="3"/>
+            </g>
+            <path class="cuerpo" d="M60 114 V140 H84 V176 H116 V140 H140 V114"/>
+            <path class="boca" d="M90 122 Q100 130 110 122"/>
+            <path class="corbata" d="M100 132 L94 142 L100 170 L106 142 Z"/>
+          </svg>
+          <div id="mensaje" class="globo nivel-0" aria-live="assertive">Preparando la cámara…</div>
+        </div>
+
+        <div class="zona-control">
+          <div class="reloj">
+            <span class="reloj-etiqueta" id="sesion-modo">Modo Examen</span>
+            <span id="reloj" class="reloj-tiempo">00:00</span>
+            <div class="barra-progreso"><div id="progreso"></div></div>
+          </div>
+
+          <div class="camara">
+            <video id="video" playsinline muted></video>
+            <span class="sello-privado">🔒 El video no sale de tu dispositivo</span>
+          </div>
+
+          <ul class="indicadores">
+            <li id="ind-presente">Presente</li>
+            <li id="ind-mirada">Mirada</li>
+            <li id="ind-movimiento">Quietud</li>
+          </ul>
+
+          <p class="concentracion-vivo">Concentración: <b id="pct-vivo">—</b> · Distracciones: <b id="num-vivo">0</b></p>
+
+          <button id="btn-terminar" class="boton secundario">Terminar sesión</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== PANTALLA 4: INFORME ===== -->
+    <section id="pantalla-informe" class="pantalla">
+      <h1>Informe de la sesión</h1>
+      <p id="inf-mensaje" class="sub"></p>
+      <p id="inf-aviso" class="error" hidden></p>
+
+      <div class="informe">
+        <div class="anillo" id="inf-anillo"><span id="inf-pct">0%</span><small>concentración</small></div>
+        <div class="cifras">
+          <div class="cifra"><small>Tiempo total</small><b id="inf-total">—</b></div>
+          <div class="cifra"><small>Tiempo concentrado</small><b id="inf-concentrado">—</b></div>
+          <div class="cifra"><small>Distracciones</small><b id="inf-num">—</b></div>
+          <div class="cifra"><small>Distracción más larga</small><b id="inf-larga">—</b></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>Tipos de distracción</h3>
+        <ul id="inf-tipos" class="lista-tipos"></ul>
+      </div>
+
+      <div class="acciones">
+        <button class="boton secundario" data-ir="historial">Ver historial</button>
+        <button class="boton primario" data-ir="inicio">Nueva sesión</button>
+      </div>
+    </section>
+
+    <!-- ===== PANTALLA 5: HISTORIAL ===== -->
+    <section id="pantalla-historial" class="pantalla">
+      <h1>Mi historial</h1>
+      <p class="sub">Sesiones guardadas desde este navegador.</p>
+      <div class="panel">
+        <table class="tabla">
+          <thead><tr><th>Fecha</th><th>Modo</th><th>Tiempo</th><th>Distr.</th><th>Concentr.</th></tr></thead>
+          <tbody id="hist-filas"></tbody>
+        </table>
+        <p id="hist-vacio" class="sub" hidden>Aún no tienes sesiones. ¡Empieza la primera!</p>
+      </div>
+      <div class="acciones"><button class="boton primario" data-ir="inicio">Volver al inicio</button></div>
+    </section>
+  </main>
+
+  <footer class="pie">VigilaTec · El análisis de video ocurre solo en tu dispositivo.</footer>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
