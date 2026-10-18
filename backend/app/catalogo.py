@@ -33,3 +33,6 @@ PAQUETES_POR_ID = {p["id"]: p for p in PAQUETES}
 
 # Apariencias del vigilante permitidas (los dibujos viven en el navegador)
 APARIENCIAS = {"vigilatec", "profesor", "profesora", "robot", "sargento"}
+
+# Versión del aviso de privacidad. Si cambia el texto, cambia la versión (queda registro de qué aceptó cada quien).
+VERSION_AVISO = "2026-10"

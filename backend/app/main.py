@@ -6,7 +6,7 @@ from .config import CARPETA_FRONTEND
 from sqlalchemy import text
 
 from .database import actualizar_tablas, motor
-from .rutas import paquetes, sesiones
+from .rutas import cuentas, escuelas, paquetes, ranking, sesiones
 
 # Crea las tablas (o agrega columnas nuevas) si hace falta
 if ("sesiones", "paquete") in actualizar_tablas():
@@ -14,7 +14,7 @@ if ("sesiones", "paquete") in actualizar_tablas():
     with motor.begin() as conexion:
         conexion.execute(text("UPDATE sesiones SET paquete = modo"))
 
-app = FastAPI(title="VigilaTec API", version="0.2.0")
+app = FastAPI(title="VigilaTec API", version="0.3.0")
 
 
 @app.get("/api/salud")
@@ -26,10 +26,10 @@ def salud():
 # --- Módulos de la API ---
 app.include_router(sesiones.router)
 app.include_router(paquetes.router)
-# Próximas fases (cada una será un archivo nuevo en app/rutas/):
-#   app.include_router(cuentas.router)      -> registro e inicio de sesión
-#   app.include_router(grupos.router)       -> escuelas y salones
-#   app.include_router(ranking.router)      -> ranking entre salones
+app.include_router(cuentas.router)    # registro e inicio de sesión
+app.include_router(escuelas.router)   # escuelas, salones y códigos de invitación
+app.include_router(ranking.router)    # ranking y progreso semanal
+# Próxima fase (un archivo nuevo en app/rutas/):
 #   app.include_router(ia_academica.router) -> IA de búsqueda académica
 
 # La página web se sirve al final, para no tapar las rutas /api

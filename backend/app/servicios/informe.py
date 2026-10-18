@@ -56,4 +56,6 @@ def construir_informe(sesion: SesionEstudio) -> dict:
         "tiempo_por_tipo": dict(tiempos),
         "distraccion_mas_larga": max((d.duracion for d in ds), default=0),
         "mensaje": mensaje_final(sesion.porcentaje_concentracion),
+        "valida_ranking": sesion.valida_ranking,
+        "motivo_no_valida": sesion.motivo_no_valida,
     }
