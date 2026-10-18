@@ -116,6 +116,12 @@ const EFECTOS = {
     soplo(t + 0.06, 0.35, "bandpass", 2500, [[0.03, 0.18], [0.3, 0.06], [0.35, 0.001]], 0.8);
     return 420;
   },
+  // Rugido de león (corto y amistoso)
+  rugido(t) {
+    tono(95, "sawtooth", [[0.12, 0.18], [0.5, 0.12], [0.85, 0.001]], t, 70);
+    soplo(t, 0.85, "bandpass", 420, [[0.12, 0.35], [0.5, 0.22], [0.85, 0.001]], 1.5, [[0.3, 650], [0.85, 300]]);
+    return 800;
+  },
   // Pitido de sistema: "bip-bip"
   pitido(t) {
     tono(1250, "square", [[0.005, 0.07], [0.08, 0.07], [0.09, 0.001]], t);
@@ -136,9 +142,9 @@ function cargarAudio(url) {
   return cacheAudio.get(url);
 }
 
-/** Reproduce una voz grabada. Devuelve false si no se pudo (para usar la voz del navegador). */
+/** Reproduce una voz grabada. Devuelve su duración en ms, o 0 si no se pudo (para usar la voz del navegador). */
 export async function tocarVoz(url) {
-  if (!ctx || ctx.state !== "running") return false;
+  if (!ctx || ctx.state !== "running") return 0;
   try {
     const buffer = await cargarAudio(url);
     callarVoz();
@@ -146,10 +152,10 @@ export async function tocarVoz(url) {
     vozActual.buffer = buffer;
     vozActual.connect(ctx.destination);
     vozActual.start();
-    return true;
+    return buffer.duration * 1000;
   } catch {
     cacheAudio.delete(url);
-    return false;
+    return 0;
   }
 }
 

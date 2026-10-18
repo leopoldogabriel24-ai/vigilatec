@@ -43,7 +43,8 @@ export class Vigilante {
 
   pintarNivel(nivel) {
     this.nivel = nivel;
-    this.svg.setAttribute("class", `vigilante nivel-${nivel} ap-${this.personaje.id}`);
+    const hablando = this.svg.classList.contains("hablando") ? " hablando" : "";
+    this.svg.setAttribute("class", `vigilante nivel-${nivel} ap-${this.personaje.id}${hablando}`);
   }
 
   /** Cambia la expresión (0 = tranquilo, 3 = muy serio) y el texto del globo. */
@@ -73,13 +74,20 @@ export class Vigilante {
     this.hablar(texto, 0);
   }
 
-  /** Elige la voz del dispositivo que mejor le queda al personaje. */
+  /** Mueve la boca del vigilante mientras habla. */
+  animarBoca(ms) {
+    clearTimeout(this.finBoca);
+    this.svg.classList.add("hablando");
+    this.finBoca = setTimeout(() => this.svg.classList.remove("hablando"), ms);
+  }
+
+  /** Elige la voz del dispositivo que mejor le queda al personaje (prefiere las voces "naturales"). */
   elegirVoz() {
     const { genero } = this.personaje.voz;
     const filtro = genero === "f" ? VOCES_MUJER : genero === "m" ? VOCES_HOMBRE : null;
-    const mexicana = (v) => v.lang === "es-MX";
-    return (filtro && (this.voces.find((v) => filtro.test(v.name) && mexicana(v)) ?? this.voces.find((v) => filtro.test(v.name))))
-      ?? this.voces.find(mexicana) ?? this.voces[0] ?? null;
+    const puntos = (v) => (/natural|neural|online/i.test(v.name) ? 4 : 0) + (/google/i.test(v.name) ? 2 : 0)
+      + (/es-(MX|US|419)/i.test(v.lang) ? 2 : 0) + (filtro && filtro.test(v.name) ? 3 : 0);
+    return [...this.voces].sort((a, b) => puntos(b) - puntos(a))[0] ?? null;
   }
 
   /** Lee el mensaje en voz alta (más grave y lento si es severo). */
@@ -99,7 +107,8 @@ export class Vigilante {
     if (this.personaje.vozGrabada) {
       const archivo = (await indiceDe(this.personaje.id))[texto];
       if (turno !== this.turnoVoz) return;
-      if (archivo && await tocarVoz(`audio/voces/${this.personaje.id}/${archivo}`)) return;
+      const dura = archivo ? await tocarVoz(`audio/voces/${this.personaje.id}/${archivo}`) : 0;
+      if (dura) { this.animarBoca(dura); return; }
     }
     // Las palabras en MAYÚSCULAS se pasan a minúsculas para que la voz no las deletree
     const u = new SpeechSynthesisUtterance(texto.replace(/[A-ZÁÉÍÓÚÑÜ]{2,}/g, (p) => p.toLowerCase()));
@@ -109,10 +118,14 @@ export class Vigilante {
     const { tono, velocidad } = this.personaje.voz;
     u.pitch = Math.max(0.1, Math.min(2, tono * (nivel >= 2 ? 0.9 : 1)));
     u.rate = velocidad * (nivel >= 3 ? 0.92 : 1);
+    // La boca se mueve mientras habla (calculado por el largo de la frase, y se detiene al terminar)
+    this.animarBoca(Math.max(1200, texto.length * 70 / u.rate));
+    u.onend = () => this.svg.classList.remove("hablando");
     speechSynthesis.speak(u);
   }
 
   callar() {
+    this.svg.classList.remove("hablando");
     this.turnoVoz = (this.turnoVoz ?? 0) + 1;
     clearTimeout(this.esperaVoz);
     callarVoz();

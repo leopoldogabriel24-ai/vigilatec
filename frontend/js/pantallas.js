@@ -11,7 +11,7 @@ export function alMostrar(nombre, fn) {
 export function mostrar(nombre) {
   if (nombre !== actual) { anterior = actual; actual = nombre; }
   document.querySelectorAll(".pantalla").forEach((p) => p.classList.toggle("activa", p.id === `pantalla-${nombre}`));
-  window.scrollTo(0, 0);
+  window.scrollTo({ top: 0, behavior: "instant" });
   (ganchos[nombre] ?? []).forEach((fn) => fn());
 }
 

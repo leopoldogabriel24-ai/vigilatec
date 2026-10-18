@@ -13,6 +13,30 @@
   <link rel="stylesheet" href="css/estilos.css">
 </head>
 <body>
+  <!-- Degradados compartidos por todos los dibujos de vigilantes (brillos y sombras) -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <defs>
+      <radialGradient id="g-halo" cx="50%" cy="40%" r="65%"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#dbe8f5"/></radialGradient>
+      <radialGradient id="g-piel" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#fbe3c8"/><stop offset="1" stop-color="#e2b88f"/></radialGradient>
+      <radialGradient id="g-piel-ceniza" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#f5f2ec"/><stop offset="1" stop-color="#c6bfb3"/></radialGradient>
+      <radialGradient id="g-piel-verde" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#c3d99c"/><stop offset="1" stop-color="#7f9b58"/></radialGradient>
+      <linearGradient id="g-negro" x1="0" y1="0" x2="0.4" y2="1"><stop offset="0" stop-color="#454b57"/><stop offset=".35" stop-color="#1c1f26"/><stop offset="1" stop-color="#07080b"/></linearGradient>
+      <linearGradient id="g-acero" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e3e8ed"/><stop offset=".5" stop-color="#a3adb8"/><stop offset="1" stop-color="#6c7682"/></linearGradient>
+      <linearGradient id="g-plata" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".55" stop-color="#cfd8e2"/><stop offset="1" stop-color="#8e9aa8"/></linearGradient>
+      <linearGradient id="g-oro" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff0b0"/><stop offset=".45" stop-color="#f2c94c"/><stop offset="1" stop-color="#b8860b"/></linearGradient>
+      <linearGradient id="g-rojo" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#ef5350"/><stop offset=".5" stop-color="#c62828"/><stop offset="1" stop-color="#7f0000"/></linearGradient>
+      <linearGradient id="g-verde-armadura" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#7d9a55"/><stop offset=".5" stop-color="#556b3c"/><stop offset="1" stop-color="#2f3b1e"/></linearGradient>
+      <linearGradient id="g-visor" x1="0" y1="0" x2="0.6" y2="1"><stop offset="0" stop-color="#ffe2a0"/><stop offset=".45" stop-color="#f0a83a"/><stop offset="1" stop-color="#9a5a10"/></linearGradient>
+      <radialGradient id="g-fuego" cx="50%" cy="60%" r="60%"><stop offset="0" stop-color="#fff2b0"/><stop offset=".35" stop-color="#ffb43c"/><stop offset=".75" stop-color="#f2632a"/><stop offset="1" stop-color="#b3261e"/></radialGradient>
+      <radialGradient id="g-ojo-fuego" cx="50%" cy="50%" r="55%"><stop offset="0" stop-color="#fff7c8"/><stop offset=".6" stop-color="#ffd66b"/><stop offset="1" stop-color="#f2932a"/></radialGradient>
+      <linearGradient id="g-verde-capa" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#4c8a5a"/><stop offset="1" stop-color="#1c3a24"/></linearGradient>
+      <linearGradient id="g-azul" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a7cc4"/><stop offset="1" stop-color="#023a66"/></linearGradient>
+      <linearGradient id="g-bronce" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f0cc8e"/><stop offset=".5" stop-color="#b8925a"/><stop offset="1" stop-color="#7a5a2a"/></linearGradient>
+      <linearGradient id="g-capucha" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#3a4250"/><stop offset="1" stop-color="#0d1015"/></linearGradient>
+      <linearGradient id="g-tunica" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a88a62"/><stop offset="1" stop-color="#6e5536"/></linearGradient>
+      <linearGradient id="g-dorado-tec" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe27a"/><stop offset="1" stop-color="#e0a800"/></linearGradient>
+    </defs>
+  </svg>
   <header class="barra">
     <button class="marca" data-ir="inicio" aria-label="Ir al inicio">
       <img src="img/logo-icono.png" alt="" width="38" height="36">
@@ -31,14 +55,40 @@
   <main>
     <!-- ===== PANTALLA 1: INICIO ===== -->
     <section id="pantalla-inicio" class="pantalla activa">
-      <img class="logo-grande" src="img/logo-completo.png" alt="VigilaTec — Tecnológico de México, Estudiantes" width="394" height="334">
-      <h1>Estudia con la presión<br>de un examen real</h1>
-      <p class="sub">Un vigilante te observa por la cámara y te avisa cuando te distraes. Tú decides cuánto tiempo y qué tan estricto.</p>
+      <!-- Portada: azul con un toque amarillo y la mascota León Azul -->
+      <div class="portada">
+        <div class="portada-texto">
+          <img class="logo-portada" src="img/logo-completo.png" alt="VigilaTec — Tecnológico de México, Estudiantes" width="394" height="334">
+          <h1>Estudia con la presión de un <mark>examen real</mark></h1>
+          <p>Un vigilante te observa por la cámara y te avisa cuando te distraes. Tú decides cuánto tiempo y qué tan estricto.</p>
+          <div class="portada-botones">
+            <a class="boton amarillo" href="#paquetes">¡Empezar ahora!</a>
+            <a class="boton fantasma" href="#galeria-vigilantes">Conoce a los vigilantes</a>
+          </div>
+          <p class="portada-sello">🔒 El video nunca sale de tu dispositivo</p>
+        </div>
+        <div class="portada-mascota">
+          <svg id="mascota" class="vigilante nivel-0 ap-leon" viewBox="0 0 200 200" role="img" aria-label="León Azul, la mascota de VigilaTec"></svg>
+          <span class="globo-mascota">¡Ruge con fuerza y concéntrate!</span>
+        </div>
+      </div>
 
+      <!-- Cómo funciona, en 3 pasos -->
+      <ol class="pasos">
+        <li><span class="paso-num">1</span><b>Elige tu paquete</b><small>Examen o estudio, con el tiempo que tú quieras.</small></li>
+        <li><span class="paso-num">2</span><b>Escoge a tu vigilante</b><small>Del profe serio al León Azul. Cada uno tiene su voz.</small></li>
+        <li><span class="paso-num">3</span><b>Concéntrate y mejora</b><small>Al final ves tu informe y tu progreso semana a semana.</small></li>
+      </ol>
+
+      <h2 class="titulo-seccion" id="paquetes">Elige tu paquete</h2>
       <!-- Los paquetes se cargan desde el servidor (catálogo en backend/app/catalogo.py) -->
       <div id="lista-paquetes" class="tarjetas-modo" aria-live="polite">
         <p class="sub">Cargando paquetes…</p>
       </div>
+
+      <h2 class="titulo-seccion" id="galeria-vigilantes">Conoce a los vigilantes</h2>
+      <p class="sub">Toca uno para escucharlo. Quedará elegido para tu próxima sesión.</p>
+      <div id="galeria" class="galeria-vigilantes"></div>
     </section>
 
     <!-- ===== PANTALLA 2: CONFIGURACIÓN Y PERMISO DE CÁMARA ===== -->
@@ -450,7 +500,11 @@
     </section>
   </main>
 
-  <footer class="pie">VigilaTec · El análisis de video ocurre solo en tu dispositivo.</footer>
+  <footer class="pie">
+    <img src="img/logo-icono.png" alt="" width="30" height="28">
+    <span><b>VigilaTec</b> · Hecho para estudiantes del TecNM</span>
+    <small>🔒 El análisis de video ocurre solo en tu dispositivo. Nunca se graba ni se envía.</small>
+  </footer>
 
   <script type="module" src="js/app.js"></script>
 </body>

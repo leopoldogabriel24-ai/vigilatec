@@ -46,6 +46,47 @@ function crearSelectorVigilantes() {
 }
 crearSelectorVigilantes();
 
+// ---------- Portada: mascota y galería de vigilantes ----------
+/** Hace hablar a un personaje desde la portada (y mueve la boca de su dibujo). */
+function escucharPersonaje(id, dibujo) {
+  prepararSonido();
+  vigilante.usar(id);
+  const vozElegida = vigilante.voz;
+  vigilante.voz = true;
+  vigilante.animar();
+  vigilante.voz = vozElegida;
+  dibujo.classList.add("hablando");
+  clearTimeout(dibujo.finBoca);
+  dibujo.finBoca = setTimeout(() => dibujo.classList.remove("hablando"), 2600);
+}
+
+function crearPortada() {
+  const leon = VIGILANTES.find((v) => v.id === "leon");
+  const mascota = $("mascota");
+  if (leon) {
+    mascota.innerHTML = leon.svg;
+    mascota.addEventListener("click", () => escucharPersonaje("leon", mascota));
+  }
+  const galeria = $("galeria");
+  const elegido = cargarPreferencias().apariencia;
+  for (const v of VIGILANTES) {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = `ficha-vigilante${v.premium ? " premium" : ""}${v.id === elegido ? " elegido" : ""}`;
+    b.innerHTML = `<svg class="vigilante nivel-0 ap-${v.id}" viewBox="0 0 200 200" aria-hidden="true">${v.svg}</svg><b></b>${v.premium ? "<span class='insignia-premium'>★ Premium</span>" : ""}`;
+    b.querySelector("b").textContent = v.nombre;
+    b.title = v.descripcion;
+    b.addEventListener("click", () => {
+      guardarPreferencias({ apariencia: v.id });
+      galeria.querySelectorAll(".elegido").forEach((x) => x.classList.remove("elegido"));
+      b.classList.add("elegido");
+      escucharPersonaje(v.id, b.querySelector("svg"));
+    });
+    galeria.appendChild(b);
+  }
+}
+crearPortada();
+
 // Escuchar al vigilante elegido antes de empezar (con su efecto de sonido)
 $("btn-escuchar").addEventListener("click", () => {
   prepararSonido();
@@ -441,6 +482,8 @@ function pintarInforme(inf) {
   $("inf-mensaje").textContent = inf.mensaje;
   $("inf-pct").textContent = `${Math.round(inf.porcentaje_concentracion)}%`;
   $("inf-anillo").style.setProperty("--pct", inf.porcentaje_concentracion);
+  $("inf-anillo").classList.toggle("excelente", inf.porcentaje_concentracion >= 85);
+  if (inf.porcentaje_concentracion >= 85 && inf.duracion_real >= 60) lanzarConfeti();
   $("inf-total").textContent = formatoDuracion(inf.duracion_real);
   $("inf-concentrado").textContent = formatoDuracion(inf.tiempo_concentrado);
   $("inf-num").textContent = inf.numero_distracciones;
@@ -461,6 +504,26 @@ function pintarInforme(inf) {
     li.children[2].textContent = `${n} · ${formatoDuracion(inf.tiempo_por_tipo[tipo] ?? 0)}`;
     lista.appendChild(li);
   }
+}
+
+/** Lluvia de confeti azul, blanco y amarillo para celebrar una gran sesión. */
+function lanzarConfeti() {
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const caja = document.createElement("div");
+  caja.className = "confeti";
+  caja.setAttribute("aria-hidden", "true");
+  const colores = ["#045491", "#2a7cc4", "#f5b800", "#ffe27a", "#ffffff"];
+  for (let i = 0; i < 80; i++) {
+    const p = document.createElement("i");
+    p.style.left = `${Math.random() * 100}%`;
+    p.style.background = colores[i % colores.length];
+    p.style.animationDelay = `${Math.random() * 0.8}s`;
+    p.style.animationDuration = `${2.2 + Math.random() * 1.6}s`;
+    p.style.setProperty("--giro", `${Math.random() * 720 - 360}deg`);
+    caja.appendChild(p);
+  }
+  document.body.appendChild(caja);
+  setTimeout(() => caja.remove(), 4800);
 }
 
 // ---------- Preguntas de práctica (sesión e informe) ----------

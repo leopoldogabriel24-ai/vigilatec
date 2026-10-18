@@ -444,3 +444,173 @@ main { flex: 1; width: 100%; max-width: 1100px; margin: 0 auto; padding: 2rem 16
 .vigilante .pupila.reflejo { fill: #fff1c7; opacity: .75; }
 .vigilante.ap-jefe .ceja, .vigilante.ap-jefe .boca { stroke: #2f3b1e; }
 .vigilante.nivel-3 .pupila.reflejo { fill: #ff5252; opacity: 1; }
+
+/* ===== Vigilantes "a tope": brillos, sombras y vida ===== */
+.vigilante { filter: drop-shadow(0 8px 14px rgba(2, 58, 102, .22)); overflow: visible; }
+.vigilante .halo { fill: url(#g-halo); }
+.vigilante .piel { fill: url(#g-piel); }
+.vigilante .piel-ceniza { fill: url(#g-piel-ceniza); }
+.vigilante .piel-verde { fill: url(#g-piel-verde); }
+.vigilante .casco-negro, .vigilante .capa-negra, .vigilante .negro { fill: url(#g-negro); }
+.vigilante .capucha { fill: url(#g-capucha); }
+.vigilante .mascara-acero, .vigilante .gris-metal { fill: url(#g-acero); }
+.vigilante .plata, .vigilante .metal { fill: url(#g-plata); }
+.vigilante .dorado-armadura, .vigilante .dorado { fill: url(#g-oro); }
+.vigilante .rojo-armadura, .vigilante .tela-roja, .vigilante .capa-roja { fill: url(#g-rojo); }
+.vigilante .verde-armadura { fill: url(#g-verde-armadura); }
+.vigilante .visor-dorado { fill: url(#g-visor); }
+.vigilante .fuego { fill: url(#g-fuego); }
+.vigilante .ojo-fuego { fill: url(#g-ojo-fuego); }
+.vigilante .verde-capa { fill: url(#g-verde-capa); }
+.vigilante .relleno { fill: url(#g-azul); }
+.vigilante .bronce { fill: url(#g-bronce); }
+.vigilante .tunica { fill: url(#g-tunica); }
+.vigilante.nivel-3 .relleno { fill: var(--rojo); }
+
+/* Parpadeo: cada tanto los ojos se cierran un instante */
+.vigilante .pupila { transform-box: fill-box; transform-origin: center; animation: parpadeo 5.5s infinite; }
+@keyframes parpadeo { 0%, 94%, 100% { transform: scaleY(1); } 96% { transform: scaleY(.1); } }
+/* El vigilante de la sesión flota suavemente (salvo cuando se enoja y se sacude) */
+#vigilante:not(.nivel-3) { animation: flotar 4.5s ease-in-out infinite; }
+@keyframes flotar { 50% { transform: translateY(-5px); } }
+/* Mientras habla, mueve la boca y su aro brilla */
+.vigilante.hablando .boca { animation: hablar .16s ease-in-out infinite alternate; transform-box: fill-box; transform-origin: center; }
+@keyframes hablar { from { transform: scaleY(1); } to { transform: scaleY(2.4) translateY(1px); } }
+.vigilante.hablando .halo { stroke-width: 5; }
+@media (prefers-reduced-motion: reduce) {
+  .vigilante .pupila, #vigilante, .vigilante.hablando .boca, .vigilante .pupilas, .vigilante .fuego, .vigilante .fuego-claro { animation: none !important; }
+}
+/* León Azul (mascota original) */
+.vigilante .melena path { fill: url(#g-azul); stroke: #023a66; stroke-width: 2; stroke-linejoin: round; }
+.vigilante .oreja-leon { fill: #f2dcb0; stroke: #c9a46a; stroke-width: 2; }
+.vigilante .oreja-interior-leon { fill: #e8a6a0; }
+.vigilante .cara-leon { fill: #f6e3bd; stroke: #d4b27a; stroke-width: 2; }
+.vigilante .hocico { fill: #fff8ea; }
+.vigilante .nariz-leon { fill: #3a2a20; }
+.vigilante .bigote-leon { fill: none; stroke: #8a6a4a; stroke-width: 1.6; stroke-linecap: round; }
+.vigilante .dorado-tec { fill: url(#g-dorado-tec); }
+.vigilante.ap-leon .ceja, .vigilante.ap-leon .boca { stroke: #5a3d2a; }
+.vigilante.nivel-3 .melena path { fill: #c62828; stroke: #7f0000; }
+
+/* ===== Rediseño visual: amarillo TecNM leve, portada, galería, confeti ===== */
+:root { --amarillo: #f5b800; --amarillo-claro: #ffe27a; --amarillo-fondo: #fff8dc; }
+html { scroll-behavior: smooth; }
+body { overflow-x: hidden; }
+::selection { background: var(--amarillo-claro); color: var(--texto); }
+
+/* Barra superior con degradado y una línea amarilla */
+.barra { background: linear-gradient(90deg, var(--azul-oscuro), var(--azul) 60%, #0b6bb5); border-bottom: 3px solid var(--amarillo); position: sticky; top: 0; z-index: 20; box-shadow: 0 2px 12px rgba(2, 58, 102, .25); }
+
+/* Botones con más vida */
+.boton { transition: transform .12s, box-shadow .15s, background .15s; text-decoration: none; display: inline-block; }
+.boton:active { transform: scale(.97); }
+.boton.primario { background: linear-gradient(180deg, #0b6bb5, var(--azul)); box-shadow: 0 4px 14px rgba(4, 84, 145, .3); }
+.boton.primario:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(4, 84, 145, .38); }
+.boton.amarillo { background: linear-gradient(180deg, var(--amarillo-claro), var(--amarillo)); border-color: var(--amarillo); color: var(--azul-oscuro); box-shadow: 0 6px 18px rgba(245, 184, 0, .35); }
+.boton.amarillo:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(245, 184, 0, .45); }
+.boton.fantasma { background: transparent; border-color: rgba(255, 255, 255, .7); color: var(--blanco); }
+.boton.fantasma:hover { background: rgba(255, 255, 255, .12); }
+
+/* Portada a todo lo ancho */
+.portada {
+  position: relative; overflow: hidden;
+  margin: -2rem calc(50% - 50vw) 0; padding: 3rem max(16px, calc(50vw - 540px)) 4.5rem;
+  display: grid; grid-template-columns: 1.15fr .85fr; align-items: center; gap: 2rem;
+  color: var(--blanco);
+  background:
+    radial-gradient(circle at 85% 20%, rgba(255, 226, 122, .22), transparent 35%),
+    radial-gradient(circle at 10% 90%, rgba(42, 124, 196, .55), transparent 45%),
+    linear-gradient(135deg, var(--azul-oscuro), var(--azul) 55%, #0b6bb5);
+}
+/* Patrón suave de puntos y una curva blanca abajo */
+.portada::before { content: ""; position: absolute; inset: 0; background-image: radial-gradient(rgba(255, 255, 255, .09) 1.5px, transparent 1.5px); background-size: 22px 22px; pointer-events: none; }
+.portada::after { content: ""; position: absolute; left: -5%; right: -5%; bottom: -60px; height: 110px; background: var(--blanco); border-radius: 50%; }
+.portada > * { position: relative; z-index: 1; }
+.logo-portada { width: 150px; height: auto; filter: brightness(0) invert(1); margin-bottom: 1rem; opacity: .95; }
+.portada h1 { color: var(--blanco); text-align: left; font-size: clamp(1.9rem, 5vw, 3rem); line-height: 1.15; margin-bottom: 1rem; }
+.portada mark { background: linear-gradient(transparent 62%, rgba(245, 184, 0, .85) 62%); color: inherit; padding: 0 .05em; }
+.portada-texto p { font-size: 1.08rem; max-width: 520px; opacity: .95; margin: 0 0 1.5rem; }
+.portada-botones { display: flex; flex-wrap: wrap; gap: .8rem; }
+.portada-texto .portada-sello { font-size: .85rem; margin: 1.2rem 0 0; opacity: .85; }
+.portada-mascota { position: relative; display: grid; place-items: center; }
+.portada-mascota::before { content: ""; position: absolute; width: 85%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle, rgba(255, 226, 122, .45), transparent 65%); animation: latir 3.5s ease-in-out infinite; }
+#mascota { width: min(330px, 70vw); height: auto; cursor: pointer; animation: flotar 4.5s ease-in-out infinite; filter: drop-shadow(0 18px 24px rgba(0, 0, 0, .3)); }
+.globo-mascota { position: absolute; top: 2%; right: 0; background: var(--blanco); color: var(--azul); font-weight: 700; font-size: .85rem; padding: .45rem .8rem; border-radius: 14px 14px 14px 2px; box-shadow: 0 6px 16px rgba(0, 0, 0, .2); border: 2px solid var(--amarillo); max-width: 170px; }
+@keyframes latir { 50% { transform: scale(1.08); opacity: .75; } }
+
+/* Pasos */
+.pasos { list-style: none; padding: 0; margin: -1.5rem auto 2.5rem; max-width: 960px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; position: relative; z-index: 2; }
+.pasos li { background: var(--blanco); border-radius: 16px; padding: 1.2rem 1.1rem; box-shadow: 0 8px 24px rgba(4, 84, 145, .12); border-top: 4px solid var(--amarillo); display: flex; flex-direction: column; gap: .2rem; }
+.paso-num { width: 2.2rem; height: 2.2rem; border-radius: 50%; display: grid; place-items: center; font-weight: 700; color: var(--azul-oscuro); background: linear-gradient(180deg, var(--amarillo-claro), var(--amarillo)); margin-bottom: .3rem; }
+.pasos b { color: var(--azul); }
+.pasos small { color: var(--texto-suave); }
+
+.titulo-seccion { text-align: center; font-size: clamp(1.4rem, 3.5vw, 1.9rem); margin: 2.5rem 0 1.2rem; scroll-margin-top: 80px; }
+.titulo-seccion::after { content: ""; display: block; width: 60px; height: 4px; border-radius: 2px; background: var(--amarillo); margin: .5rem auto 0; }
+
+/* Tarjetas de paquetes más vistosas */
+.tarjeta-modo { position: relative; overflow: hidden; border-width: 1px; }
+.tarjeta-modo::before { content: ""; position: absolute; left: 0; top: 0; right: 0; height: 5px; background: linear-gradient(90deg, var(--azul), #2a7cc4); }
+.tarjeta-modo:hover::before, .tarjeta-modo:focus-visible::before { background: linear-gradient(90deg, var(--azul), var(--amarillo)); }
+.tarjeta-modo .icono { width: 3.4rem; height: 3.4rem; display: grid; place-items: center; font-size: 1.9rem; border-radius: 14px; background: var(--azul-tenue); transition: transform .2s; }
+.tarjeta-modo:hover .icono { transform: rotate(-6deg) scale(1.08); }
+.tarjeta-modo::after { content: "Comenzar →"; margin-top: auto; padding-top: .9rem; font-weight: 700; color: var(--azul); font-size: .9rem; }
+.tarjeta-modo:disabled::after { content: ""; }
+
+/* Galería de vigilantes */
+.galeria-vigilantes { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: .8rem; max-width: 960px; margin: 0 auto 1rem; }
+.ficha-vigilante { position: relative; display: flex; flex-direction: column; align-items: center; gap: .3rem; padding: .8rem .4rem .7rem; background: var(--blanco); border: 2px solid var(--borde); border-radius: 16px; transition: transform .15s, box-shadow .15s, border-color .15s; }
+.ficha-vigilante svg { width: 88px; height: 88px; transition: transform .2s; }
+.ficha-vigilante b { font-size: .8rem; color: var(--azul); line-height: 1.2; }
+.ficha-vigilante:hover, .ficha-vigilante:focus-visible { transform: translateY(-4px); box-shadow: 0 10px 22px rgba(4, 84, 145, .15); border-color: var(--azul); outline: none; }
+.ficha-vigilante:hover svg { transform: scale(1.08) rotate(-3deg); }
+.ficha-vigilante.elegido { border-color: var(--amarillo); background: var(--amarillo-fondo); box-shadow: 0 0 0 3px rgba(245, 184, 0, .3); }
+.ficha-vigilante.elegido::after { content: "✓ Elegido"; position: absolute; top: 6px; left: 6px; font-size: .62rem; font-weight: 700; color: var(--azul-oscuro); background: var(--amarillo); padding: .05rem .4rem; border-radius: 999px; }
+.ficha-vigilante.premium { background: linear-gradient(180deg, #fff, #f3f6fb); }
+.insignia-premium { position: absolute; top: 6px; right: 6px; font-size: .6rem; font-weight: 700; color: var(--blanco); background: linear-gradient(90deg, var(--azul-oscuro), var(--azul)); padding: .05rem .4rem; border-radius: 999px; }
+
+/* Selector de vigilantes en la configuración: elegido en amarillo */
+.opcion-vigilante:has(input:checked) { border-color: var(--amarillo); background: var(--amarillo-fondo); box-shadow: 0 0 0 3px rgba(245, 184, 0, .25); }
+.opcion-vigilante:hover { border-color: var(--azul); }
+
+/* Reloj de la sesión: degradado y barra amarilla */
+.reloj { background: linear-gradient(135deg, var(--azul-oscuro), var(--azul) 60%, #0b6bb5); box-shadow: 0 8px 22px rgba(4, 84, 145, .28); }
+.barra-progreso { height: 8px; border-radius: 4px; }
+#progreso { background: linear-gradient(90deg, var(--amarillo-claro), var(--amarillo)); border-radius: 4px; box-shadow: 0 0 8px rgba(255, 226, 122, .8); }
+.camara video { border-radius: 14px; }
+
+/* Informe: anillo con degradado; dorado si fue excelente */
+.anillo { background: radial-gradient(closest-side, var(--blanco) 78%, transparent 79%), conic-gradient(#2a7cc4, var(--azul) calc(var(--pct) * 1%), var(--azul-tenue) 0); box-shadow: 0 10px 30px rgba(4, 84, 145, .18); animation: aparecer .6s ease; }
+.anillo.excelente { background: radial-gradient(closest-side, var(--blanco) 78%, transparent 79%), conic-gradient(var(--amarillo-claro), var(--amarillo) calc(var(--pct) * 1%), var(--azul-tenue) 0); }
+.anillo.excelente::after { content: "🏆"; position: absolute; transform: translate(70px, -80px); font-size: 2rem; }
+.anillo { position: relative; }
+.cifra { background: linear-gradient(180deg, var(--blanco), var(--azul-tenue)); border-left: 4px solid var(--azul); }
+.lista-tipos .barrita { background: linear-gradient(90deg, var(--azul), #2a7cc4); }
+
+/* Confeti */
+.confeti { position: fixed; inset: 0; pointer-events: none; z-index: 50; overflow: hidden; }
+.confeti i { position: absolute; top: -12px; width: 9px; height: 14px; border-radius: 2px; box-shadow: 0 0 1px rgba(0, 0, 0, .25); animation: caer linear forwards; }
+@keyframes caer { to { transform: translateY(105vh) rotate(var(--giro)); opacity: .8; } }
+
+/* Pie de página */
+.pie { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: .4rem 1rem; background: linear-gradient(90deg, var(--azul-oscuro), var(--azul)); border-top: 3px solid var(--amarillo); padding: 1.2rem 16px; }
+.pie img { background: var(--blanco); border-radius: 6px; padding: 2px; }
+.pie small { flex-basis: 100%; opacity: .8; }
+
+@media (max-width: 760px) {
+  .portada { grid-template-columns: 1fr; text-align: center; padding-top: 2rem; padding-bottom: 4rem; gap: .5rem; }
+  .portada h1 { text-align: center; }
+  .portada-texto p { margin-left: auto; margin-right: auto; }
+  .portada-botones { justify-content: center; }
+  .logo-portada { width: 110px; }
+  .portada-mascota { order: -1; }
+  #mascota { width: min(200px, 55vw); }
+  .globo-mascota { right: 2%; font-size: .75rem; max-width: 130px; }
+  .pasos { grid-template-columns: 1fr; margin-top: -1rem; }
+  .galeria-vigilantes { grid-template-columns: repeat(3, 1fr); }
+  .ficha-vigilante svg { width: 70px; height: 70px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  #mascota, .portada-mascota::before { animation: none !important; }
+}

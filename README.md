@@ -28,7 +28,7 @@ vigilatec/
 │   │   ├── config.js        Sensibilidad, tiempos y mensajes del vigilante
 │   │   ├── detector.js      Cámara + MediaPipe (detección de cara)
 │   │   ├── microfono.js     Micrófono opcional: solo mide volumen, nunca graba
-│   │   ├── vigilantes.js    Los 5 personajes: dibujo, voz y forma de hablar
+│   │   ├── vigilantes.js    Los personajes (clásicos, León Azul y premium): dibujo, voz y forma de hablar
 │   │   ├── preferencias.js  Recuerda las elecciones del estudiante en su navegador
 │   │   ├── cuentas.js       Registro (privacidad y consentimiento), entrar y "Mi cuenta"
 │   │   ├── ranking.js       Ranking del salón y entre salones
@@ -51,6 +51,9 @@ vigilatec/
 - Segundos antes de avisar, severidad, sensibilidad y frases: `frontend/js/config.js`.
 - Personajes (dibujo, voz, tono, efecto de sonido): `frontend/js/vigilantes.js`. Si agregas uno, añade su `id` en `backend/app/catalogo.py`.
 - Efectos de sonido (respiración, fuego, pitido…): `frontend/js/efectos.js`, generados por el navegador.
+- Modo "Estudio con hoja o libro" (mirar hacia abajo no cuenta como distracción): valores `cabeceoAbajo`, `ojosAbajo`,
+  `bajadaCara` y `toleranciaHoja` en `frontend/js/config.js`.
+- Brillos y sombras de los dibujos: degradados `g-...` al inicio de `frontend/index.html`. El amarillo TecNM es leve (`--amarillo`).
 - Voces grabadas con efectos (Penumbra, Tirano, Ares, Vigilante Nocturno, Ojo): `frontend/audio/voces/`.
   Si cambias sus frases, regéneralas con `herramientas/generar_voces.mjs` (instrucciones dentro del archivo).
 - Vigilantes premium: hoy son un PROTOTIPO inspirado en personajes famosos; antes de publicarlos en serio o venderlos

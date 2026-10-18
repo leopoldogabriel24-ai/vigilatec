@@ -15,7 +15,8 @@ Render publica solo lo que está en la rama `main` de GitHub (leopoldogabriel24-
 ## Reglas del proyecto
 - El video y el audio se analizan SOLO en el navegador. Nunca enviar ni guardar imágenes ni audio; al servidor solo van números.
 - Comentarios del código en español, cortos.
-- Colores: azul del logo (#045491) y blanco, tipografía Montserrat.
+- Colores: azul del logo (#045491) y blanco, con un toque leve de amarillo TecNM (#f5b800); tipografía Montserrat.
+  Mascota original: León Azul (vigilante clásico `leon`).
 - La app debe seguir funcionando SIN cuenta (las cuentas son opcionales, solo necesarias para el ranking).
 - En el ranking solo se muestra el apodo; nunca correos, nombres reales ni edades.
 - Asistente de IA: la clave ANTHROPIC_API_KEY solo vive en Render; nunca en el código. No guardar preguntas ni respuestas,
