@@ -5,6 +5,7 @@ import { Microfono } from "./microfono.js";
 import { Vigilancia } from "./vigilancia.js";
 import { Vigilante } from "./vigilante.js";
 import { VIGILANTES } from "./vigilantes.js";
+import { prepararSonido } from "./efectos.js";
 import { cargarPreferencias, guardarPreferencias } from "./preferencias.js";
 import { Temporizador, formatoReloj, formatoDuracion } from "./temporizador.js";
 import * as api from "./api.js";
@@ -29,9 +30,12 @@ const valorMarcado = (nombre) => document.querySelector(`input[name=${nombre}]:c
 // ---------- Personalización del vigilante ----------
 function crearSelectorVigilantes() {
   const caja = $("cfg-vigilantes");
+  const titulo = (texto) => caja.appendChild(Object.assign(document.createElement("p"), { className: "grupo-vigilantes", textContent: texto }));
+  titulo("Clásicos");
   for (const v of VIGILANTES) {
+    if (v.premium && !caja.querySelector(".premium")) titulo("★ Premium · gratis por tiempo limitado");
     const l = document.createElement("label");
-    l.className = "opcion-vigilante";
+    l.className = `opcion-vigilante${v.premium ? " premium" : ""}`;
     l.innerHTML = `<input type="radio" name="apariencia" value="${v.id}">
       <svg class="vigilante nivel-0 ap-${v.id}" viewBox="0 0 200 200" aria-hidden="true">${v.svg}</svg>
       <b></b><small></small>`;
@@ -41,6 +45,16 @@ function crearSelectorVigilantes() {
   }
 }
 crearSelectorVigilantes();
+
+// Escuchar al vigilante elegido antes de empezar (con su efecto de sonido)
+$("btn-escuchar").addEventListener("click", () => {
+  prepararSonido();
+  vigilante.usar(valorMarcado("apariencia") ?? VIGILANTES[0].id);
+  const vozElegida = vigilante.voz;
+  vigilante.voz = true;
+  vigilante.advertir("mirada", 2);
+  vigilante.voz = vozElegida;
+});
 
 function describirSeveridad() {
   $("cfg-severidad-desc").textContent = SEVERIDAD[valorMarcado("severidad")]?.descripcion ?? "";
@@ -167,6 +181,7 @@ async function comenzar() {
   if (!(minutos >= 1 && minutos <= 360)) return mostrarError("Escribe una duración entre 1 y 360 minutos.");
 
   // El micrófono se prepara en el mismo toque del botón (los celulares lo exigen)
+  prepararSonido();   // efectos de sonido de los vigilantes (también necesitan un toque)
   const microfono = $("cfg-microfono").checked ? new Microfono() : null;
   microfono?.preparar();
 

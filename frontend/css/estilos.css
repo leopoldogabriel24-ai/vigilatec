@@ -337,3 +337,67 @@ main { flex: 1; width: 100%; max-width: 1100px; margin: 0 auto; padding: 2rem 16
 .practica-sesion .boton { width: 100%; }
 .practica-informe { text-align: left; }
 @media (max-width: 760px) { .burbuja { max-width: 100%; } }
+
+/* ===== Vigilantes premium ===== */
+.grupo-vigilantes { grid-column: 1 / -1; margin: .4rem 0 0; font-size: .82rem; font-weight: 700; color: var(--texto-suave); text-transform: uppercase; letter-spacing: .06em; }
+.opcion-vigilante.premium { border-color: #e2c46b; }
+.opcion-vigilante.premium b::after { content: " ★"; color: #c9a227; }
+.opcion-vigilante.premium:has(input:checked) { border-color: #c9a227; box-shadow: inset 0 0 0 1px #c9a227; background: #fff8e1; }
+.boton-escuchar { margin-top: .6rem; }
+
+/* Colores de los personajes premium */
+.vigilante .negro { fill: #1b1f27; }
+.vigilante .gris-oscuro { fill: #3a414c; }
+.vigilante .gris-metal { fill: #8a95a3; }
+.vigilante .plata { fill: #cfd8e2; stroke: #8a95a3; stroke-width: 2; }
+.vigilante .verde-capa { fill: #2f5d3a; }
+.vigilante .verde-oscuro { fill: #1f3f27; }
+.vigilante .piel-palida { fill: #e8e0d4; }
+.vigilante .piel-anciano { fill: #d9bf98; }
+.vigilante .musgo { fill: #6f8f4e; }
+.vigilante .capucha-noche { fill: #23303f; }
+.vigilante .ojo-buho { fill: #fff6d6; stroke: #e0a526; stroke-width: 3; }
+.vigilante .pico { fill: #e0a526; }
+.vigilante .barba { fill: #3b2a20; }
+.vigilante .barba-blanca { fill: #f1f1ee; }
+.vigilante .visor { fill: #12263a; }
+.vigilante .hexagono { fill: #4fc3f7; }
+.vigilante .fuego { fill: #f2732a; transform-box: fill-box; transform-origin: 50% 100%; animation: llama 1.6s ease-in-out infinite; }
+.vigilante .fuego-claro { fill: #ffc145; transform-box: fill-box; transform-origin: 50% 100%; animation: llama 1.1s ease-in-out infinite reverse; }
+@keyframes llama { 50% { transform: scale(1.04, 1.07); } }
+.vigilante .ojo-fuego { fill: #ffe08a; stroke: #b3261e; stroke-width: 4; }
+.vigilante .rejilla, .vigilante .trazo-metal, .vigilante .trazo-azul, .vigilante .arrugas, .vigilante .correa, .vigilante .baston, .vigilante .marca-roja { fill: none; stroke-linecap: round; }
+.vigilante .rejilla { stroke: #9aa3ad; stroke-width: 3; }
+.vigilante .trazo-metal { stroke: #6c7683; stroke-width: 3; }
+.vigilante .trazo-azul { stroke: #4fc3f7; stroke-width: 3; }
+.vigilante .arrugas { stroke: #a8865c; stroke-width: 2; }
+.vigilante .correa { stroke: #6b4a2f; stroke-width: 8; }
+.vigilante .baston { stroke: #6b4a2f; stroke-width: 6; }
+.vigilante .marca-roja { stroke: #b3261e; stroke-width: 8; }
+.vigilante .lente { fill: #11141a; stroke: #6c7683; stroke-width: 2; }
+.vigilante .brillo-lente { fill: #9aa3ad; }
+.vigilante .panel-pecho { fill: #3a414c; stroke: #c62828; stroke-width: 2; }
+.vigilante .pupila.ambar { fill: #8a5a12; }
+/* Cejas y boca visibles sobre cascos oscuros */
+.vigilante.ap-penumbra .ceja, .vigilante.ap-penumbra .boca, .vigilante.ap-tirano .ceja, .vigilante.ap-tirano .boca { stroke: #c3cad3; }
+.vigilante.ap-exo .ceja { stroke: #4fc3f7; }
+.vigilante.ap-exo .boca { stroke: #4fc3f7; stroke-width: 4; }
+.vigilante.ap-ares .boca { stroke: #e8d9c8; }
+.vigilante.ap-buho .ceja { stroke: #e0a526; }
+.vigilante.ap-ojo .ceja { stroke: #b3261e; stroke-width: 7; }
+.vigilante.ap-musgo .ceja { stroke: #f5f5f2; }
+.vigilante.ap-ojo .pupilas { animation-name: observar-amplio; }
+.vigilante .capa-violeta { fill: #3b2a55; }
+.vigilante .visor-violeta { fill: #15121c; stroke: #9575cd; stroke-width: 2; }
+.vigilante .trazo-violeta { fill: none; stroke: #5e4a80; stroke-width: 3; stroke-linecap: round; }
+.vigilante .pupila.violeta { fill: #c5b3f0; }
+.vigilante .capa-granate { fill: #6b1f26; }
+.vigilante .granate-oscuro { fill: #451318; }
+.vigilante .bronce { fill: #b8925a; stroke: #8a6a3a; stroke-width: 2; }
+.vigilante .rubi { fill: #c62828; }
+.vigilante .capa-roja { fill: #a3262a; }
+.vigilante .cresta { fill: #c62828; }
+.vigilante .iris-fuego { fill: #f2732a; }
+.vigilante.ap-penumbra .ceja { stroke: #9575cd; }
+.vigilante.ap-ares .boca { stroke: #8a5a3a; }
+.vigilante.nivel-3 .pupila.violeta, .vigilante.nivel-3 .pupila.ambar { fill: var(--rojo); }

@@ -23,4 +23,6 @@ Render publica solo lo que está en la rama `main` de GitHub (leopoldogabriel24-
 - DECISIÓN DEL DUEÑO: el asistente está APAGADO por ahora (sin pagos). Se oculta solo mientras no exista
   ANTHROPIC_API_KEY. No activarlo ni cambiarlo a otro proveedor de IA sin preguntar antes
   (los planes gratuitos como Gemini usan los datos para entrenar y no son adecuados para menores).
+- Personajes: solo ORIGINALES. No copiar personajes con derechos (Star Wars, Marvel, DC, videojuegos, etc.)
+  ni imitar voces de actores reales; se planea venderlos, así que deben ser propios de VigilaTec.
 - No romper lo que ya funciona: probar con el navegador automático antes de decir que algo está listo.

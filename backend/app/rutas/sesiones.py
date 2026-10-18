@@ -9,7 +9,7 @@ from ..catalogo import APARIENCIAS, PAQUETES_POR_ID
 from ..database import obtener_bd
 from ..esquemas import Informe, ResumenSesion, SesionEntrada
 from ..modelos import Distraccion, InicioSesionEstudio, SesionEstudio, Usuario
-from ..servicios.acceso import puede_usar
+from ..servicios.acceso import puede_usar, puede_usar_vigilante
 from ..servicios.ranking import validar_para_ranking
 from ..servicios.seguridad import huella, usuario_opcional
 from ..servicios.informe import calcular_tiempo_distraido, construir_informe, porcentaje
@@ -54,6 +54,8 @@ def guardar_sesion(
         raise HTTPException(status_code=402, detail="Este paquete es de pago")
     if datos.apariencia not in APARIENCIAS:
         raise HTTPException(status_code=422, detail="Vigilante no válido")
+    if not puede_usar_vigilante(datos.apariencia, usuario.id if usuario else None):
+        raise HTTPException(status_code=402, detail="Este vigilante es premium")
 
     distraido = calcular_tiempo_distraido(datos.distracciones, datos.duracion_real)
     concentrado = max(datos.duracion_real - distraido, 0)

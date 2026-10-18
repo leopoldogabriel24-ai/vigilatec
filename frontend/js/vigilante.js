@@ -1,6 +1,7 @@
 // Vigilante: el personaje en pantalla, sus expresiones, mensajes y voz.
 import { MENSAJES } from "./config.js";
 import { VIGILANTES, VIGILANTE_POR_ID } from "./vigilantes.js";
+import { tocarEfecto } from "./efectos.js";
 
 const azar = (lista) => (Array.isArray(lista) ? lista[Math.floor(Math.random() * lista.length)] : lista);
 
@@ -46,7 +47,9 @@ export class Vigilante {
 
   /** Advertencia por una distracción, con el tono del personaje. */
   advertir(tipoMensaje, nivel) {
-    const texto = this.personaje.decorar(azar(MENSAJES[tipoMensaje][nivel]), nivel);
+    // Algunos personajes tienen sus propias frases (por ejemplo, Maestro Musgo habla al revés)
+    const frases = this.personaje.mensajes?.[tipoMensaje]?.[nivel] ?? MENSAJES[tipoMensaje][nivel];
+    const texto = this.personaje.decorar(azar(frases), nivel);
     this.mostrar(texto, nivel);
     this.hablar(texto, nivel);
   }
@@ -75,6 +78,13 @@ export class Vigilante {
   hablar(texto, nivel) {
     if (!this.voz || !("speechSynthesis" in window)) return;
     speechSynthesis.cancel();
+    clearTimeout(this.esperaVoz);
+    // Primero su efecto de sonido (respiración, fuego, pitido…) y luego la voz
+    const espera = this.personaje.efecto ? tocarEfecto(this.personaje.efecto) : 0;
+    this.esperaVoz = setTimeout(() => this.decir(texto, nivel), espera);
+  }
+
+  decir(texto, nivel) {
     // Las palabras en MAYÚSCULAS se pasan a minúsculas para que la voz no las deletree
     const u = new SpeechSynthesisUtterance(texto.replace(/[A-ZÁÉÍÓÚÑÜ]{2,}/g, (p) => p.toLowerCase()));
     const voz = this.elegirVoz();
@@ -86,5 +96,8 @@ export class Vigilante {
     speechSynthesis.speak(u);
   }
 
-  callar() { if ("speechSynthesis" in window) speechSynthesis.cancel(); }
+  callar() {
+    clearTimeout(this.esperaVoz);
+    if ("speechSynthesis" in window) speechSynthesis.cancel();
+  }
 }
