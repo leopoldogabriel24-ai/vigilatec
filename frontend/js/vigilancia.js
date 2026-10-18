@@ -24,6 +24,7 @@ export class Vigilancia {
     if (obs.caras === 0) return "ausente";
     if (obs.movimiento) return "movimiento";
     if (obs.mirada) return "mirada";
+    if (obs.ruido) return "ruido";     // solo si el micrófono está activado
     return null;
   }
 

@@ -6,14 +6,14 @@ export const MODOS = {
   examen: {
     nombre: "Modo Examen",
     minutos: 60,
-    umbrales: { ausente: 2, mirada: 1.5, movimiento: 2, pestana: 0, otra_persona: 1 },
+    umbrales: { ausente: 2, mirada: 1.5, movimiento: 2, pestana: 0, otra_persona: 1, ruido: 3 },
     nivelMinimo: 2,          // en examen el primer aviso ya es firme
     animoCadaSeg: null,      // en examen no hay mensajes de ánimo
   },
   estudio: {
     nombre: "Modo Estudio",
     minutos: 25,
-    umbrales: { ausente: 5, mirada: 4, movimiento: 4, pestana: 3, otra_persona: null },
+    umbrales: { ausente: 5, mirada: 4, movimiento: 4, pestana: 3, otra_persona: null, ruido: 6 },
     nivelMinimo: 1,
     animoCadaSeg: 300,       // cada 5 minutos concentrado, un mensaje de ánimo
   },
@@ -49,6 +49,11 @@ export const DETECCION = {
   alejadoMin: 0.55,        // si la cara se ve menor a 55% de lo normal, te alejaste o te paraste
   graciaSeg: 1,            // segundos "bien" necesarios para dar por terminada una distracción
   cadaMs: 100,             // analizar la cámara 10 veces por segundo
+  // Micrófono (solo volumen)
+  ruidoMargenDb: 15,       // cuántos decibeles más fuerte que lo normal del lugar se considera ruido
+  ruidoMinimoDb: -50,      // en un cuarto muy silencioso, no avisar por sonidos muy bajitos
+  ventanaRuidoSeg: 1.5,    // promedio de 1.5 s para no reaccionar a un golpe o un estornudo
+  partVozConversacion: 0.65, // si más del 65% del sonido está en el rango de la voz, es plática
 };
 
 // Nombres para mostrar en el informe
@@ -58,6 +63,7 @@ export const NOMBRES_TIPO = {
   movimiento: "Mucho movimiento",
   pestana: "Saliste de la página",
   otra_persona: "Otra persona",
+  ruido: "Ruido o plática",
 };
 
 // Mensajes del vigilante por tipo y nivel (1 = suave, 2 = firme, 3 = severo)
@@ -87,6 +93,18 @@ export const MENSAJES = {
     2: ["Hay otra persona contigo. El examen es individual."],
     3: ["¡Nadie puede ayudarte! Pide que se retire."],
   },
+};
+
+// Micrófono: "ruido" se guarda como un solo tipo; el mensaje cambia si suena a conversación
+MENSAJES.ruido = {
+  1: ["Hay mucho ruido. Busca un lugar más tranquilo."],
+  2: ["Sigue habiendo mucho ruido. Así es difícil concentrarse."],
+  3: ["¡Demasiado ruido! En un examen real te pedirían silencio."],
+};
+MENSAJES.conversacion = {
+  1: ["Escucho una plática. Concéntrate en lo tuyo."],
+  2: ["Nada de conversaciones durante la sesión."],
+  3: ["¡Silencio! En un examen no se puede hablar."],
 };
 
 export const ANIMO = ["Muy bien, sigue así.", "Excelente concentración.", "Vas muy bien, no te detengas."];

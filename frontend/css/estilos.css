@@ -92,8 +92,9 @@ main { flex: 1; width: 100%; max-width: 1100px; margin: 0 auto; padding: 2rem 16
 .segmentos input:focus-visible + span { outline: 2px solid var(--azul-oscuro); outline-offset: 2px; }
 .nota { margin: .5rem 0 0; font-size: .88rem; color: var(--texto-suave); }
 #cfg-minutos-libre { display: flex; align-items: center; gap: .5rem; }
-.interruptor { display: flex; align-items: center; gap: .6rem; cursor: pointer; }
-.interruptor input { width: 20px; height: 20px; accent-color: var(--azul); }
+.interruptor { display: flex; align-items: flex-start; gap: .6rem; cursor: pointer; margin-top: .5rem; }
+.opcional { color: var(--texto-suave); font-weight: 400; }
+.interruptor input { flex-shrink: 0; width: 20px; height: 20px; margin-top: .15rem; accent-color: var(--azul); }
 
 .aviso-privacidad { max-width: 640px; margin: 0 auto 1.25rem; padding: 1rem 1.25rem; border-left: 4px solid var(--azul); background: var(--azul-tenue); border-radius: 0 12px 12px 0; }
 .aviso-privacidad ul { margin: 0; padding-left: 1.2rem; }

@@ -1,6 +1,7 @@
 // Archivo principal: maneja las pantallas y el flujo de la sesión.
 import { MODOS, DETECCION, NOMBRES_TIPO, SEVERIDAD } from "./config.js";
 import { Detector } from "./detector.js";
+import { Microfono } from "./microfono.js";
 import { Vigilancia } from "./vigilancia.js";
 import { Vigilante } from "./vigilante.js";
 import { VIGILANTES } from "./vigilantes.js";
@@ -44,6 +45,7 @@ document.addEventListener("change", (e) => {
   if (name === "apariencia") guardarPreferencias({ apariencia: value });
   if (name === "severidad") { describirSeveridad(); if (!paquete?.severidad_fija) guardarPreferencias({ severidad: value }); }
   if (e.target.id === "cfg-voz") guardarPreferencias({ voz: checked });
+  if (e.target.id === "cfg-microfono") guardarPreferencias({ microfono: checked });
 });
 
 /** Aplica en la pantalla de configuración lo que el estudiante eligió la última vez. */
@@ -57,6 +59,7 @@ function aplicarPreferencias(p) {
   if (!marcar("apariencia", pref.apariencia)) marcar("apariencia", VIGILANTES[0].id);
   if (!p.severidad_fija) marcar("severidad", pref.severidad);
   $("cfg-voz").checked = pref.voz;
+  $("cfg-microfono").checked = pref.microfono;
   const min = pref.minutos[p.id];
   if (p.duraciones) { if (min) marcar("duracion", min); }
   else if (min >= 1 && min <= 360) $("cfg-minutos").value = min;
@@ -155,6 +158,10 @@ async function comenzar() {
     : Math.round(Number($("cfg-minutos").value));
   if (!(minutos >= 1 && minutos <= 360)) return mostrarError("Escribe una duración entre 1 y 360 minutos.");
 
+  // El micrófono se prepara en el mismo toque del botón (los celulares lo exigen)
+  const microfono = $("cfg-microfono").checked ? new Microfono() : null;
+  microfono?.preparar();
+
   const boton = $("btn-comenzar");
   boton.disabled = true;
   boton.textContent = "Preparando…";
@@ -168,6 +175,7 @@ async function comenzar() {
     await detector.cargarModelo();
   } catch (e) {
     detector.apagar();
+    microfono?.apagar();
     mostrar("config");
     mostrarError(explicarError(e));
     return;
@@ -175,6 +183,23 @@ async function comenzar() {
     boton.disabled = false;
     boton.textContent = "Activar cámara y comenzar";
   }
+
+  // Si el micrófono falla, la sesión sigue solo con la cámara
+  let micActivo = null;
+  if (microfono) {
+    try {
+      await microfono.encender();
+      micActivo = microfono;
+      $("aviso-microfono").hidden = true;
+    } catch {
+      microfono.apagar();
+      $("aviso-microfono").textContent = "No se pudo usar el micrófono; la sesión sigue solo con la cámara.";
+      $("aviso-microfono").hidden = false;
+    }
+  } else {
+    $("aviso-microfono").hidden = true;
+  }
+  $("ind-ruido").hidden = !micActivo;
 
   const severidad = valorMarcado("severidad");
   const apariencia = valorMarcado("apariencia") ?? VIGILANTES[0].id;
@@ -184,10 +209,12 @@ async function comenzar() {
 
   const modo = paquete.modo;
   sesion = {
-    modo, paquete: paquete.id, severidad, apariencia, minutos, detector,
+    modo, paquete: paquete.id, severidad, apariencia, minutos, detector, microfono: micActivo,
+    ultimaObs: null,
     temporizador: new Temporizador(minutos * 60),
     vigilancia: new Vigilancia(modo, severidad, (tipo, nivel) => {
-      vigilante.advertir(tipo, nivel);
+      // El ruido usa otro mensaje si suena a conversación
+      vigilante.advertir(tipo === "ruido" && sesion.ultimaObs?.conversacion ? "conversacion" : tipo, nivel);
       sesion.ultimoAviso = performance.now();
     }),
     calibInicio: null,        // cuándo empezó la calibración (con cara visible)
@@ -225,6 +252,11 @@ function ciclo() {
   const s = sesion;
   if (!s) return;
   const obs = document.hidden ? null : s.detector.observar();
+  if (obs && s.microfono) {
+    if (s.detector.calibrado) Object.assign(obs, s.microfono.observar());  // suma lo que oye el micrófono
+    else s.microfono.muestrear();                                         // aprende el ruido normal del lugar
+  }
+  if (obs) s.ultimaObs = obs;
 
   // Fase 1: calibración (antes de que arranque el reloj)
   if (!s.detector.calibrado) {
@@ -238,6 +270,7 @@ function ciclo() {
     s.calibInicio ??= performance.now();
     vigilante.mostrar("Mira al frente unos segundos. Estoy aprendiendo cómo te ves.", 0);
     if (performance.now() - s.calibInicio >= DETECCION.calibracionSeg * 1000 && s.detector.terminarCalibracion()) {
+      s.microfono?.terminarCalibracion();
       s.temporizador.iniciar();
       s.ultimoAnimo = performance.now();
       const texto = vigilante.frase(s.modo === "examen" ? "inicioExamen" : "inicioEstudio");
@@ -284,6 +317,7 @@ function actualizarIndicadores(obs) {
   marcar("ind-presente", obs.caras === 0, obs.caras >= 2 ? "Presente (+1)" : "Presente", "Ausente");
   marcar("ind-mirada", obs.mirada, "Mirada", "Mira a otro lado");
   marcar("ind-movimiento", obs.movimiento, "Quietud", obs.alejado ? "Te alejaste" : "Movimiento");
+  marcar("ind-ruido", !!obs.ruido, "Silencio", obs.conversacion ? "Plática" : "Ruido");
 }
 
 // Evita que la pantalla se apague durante la sesión (si el navegador lo permite)
@@ -308,6 +342,7 @@ async function finalizar() {
   sesion = null;
   clearInterval(s.intervalo);
   s.detector.apagar();
+  s.microfono?.apagar();
   vigilante.callar();
   s.bloqueoPantalla?.release?.().catch(() => {});
 
@@ -317,6 +352,7 @@ async function finalizar() {
     modo: s.modo,
     paquete: s.paquete,
     apariencia: s.apariencia,
+    microfono: !!s.microfono,
     severidad: s.severidad,
     duracion_planeada: s.minutos * 60,
     duracion_real: seg,

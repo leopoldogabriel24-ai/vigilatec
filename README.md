@@ -14,8 +14,9 @@ vigilatec/
 │   │   ├── database.py      Conexión a la base de datos
 │   │   ├── modelos.py       Tablas: sesiones y distracciones
 │   │   ├── esquemas.py      Forma y validación de los datos
+│   │   ├── catalogo.py      Paquetes de uso (aquí se marcan los de pago) y vigilantes permitidos
 │   │   ├── rutas/           Direcciones de la API (aquí irán cuentas, grupos, ranking, IA)
-│   │   └── servicios/       Cálculos (informe estadístico)
+│   │   └── servicios/       Cálculos (informe estadístico) y reglas de acceso a paquetes
 │   └── datos/               Archivo de base de datos local (no se sube a internet)
 ├── frontend/                Lo que ve el usuario en el navegador
 │   ├── index.html           Todas las pantallas
@@ -24,6 +25,9 @@ vigilatec/
 │   │   ├── app.js           Flujo de pantallas y de la sesión
 │   │   ├── config.js        Sensibilidad, tiempos y mensajes del vigilante
 │   │   ├── detector.js      Cámara + MediaPipe (detección de cara)
+│   │   ├── microfono.js     Micrófono opcional: solo mide volumen, nunca graba
+│   │   ├── vigilantes.js    Los 5 personajes: dibujo, voz y forma de hablar
+│   │   ├── preferencias.js  Recuerda las elecciones del estudiante en su navegador
 │   │   ├── vigilancia.js    Decide qué es distracción y su nivel
 │   │   ├── vigilante.js     Dibujo, mensajes y voz del vigilante
 │   │   ├── temporizador.js  Reloj de la sesión
@@ -36,7 +40,13 @@ vigilatec/
 
 ## Ajustar el vigilante
 
-Casi todo se cambia en `frontend/js/config.js`: segundos antes de avisar, sensibilidad y frases.
+- Segundos antes de avisar, severidad, sensibilidad y frases: `frontend/js/config.js`.
+- Personajes (dibujo, voz, tono): `frontend/js/vigilantes.js`. Si agregas uno, añade su `id` en `APARIENCIAS` de `backend/app/catalogo.py`.
+
+## Paquetes de uso
+
+Están en `backend/app/catalogo.py`. Para volver uno de pago: `"de_pago": True` y un `"precio_mxn"`.
+La regla de quién puede usarlo está en `backend/app/servicios/acceso.py` (hoy todo es gratis).
 
 ## Probar en tu computadora (Windows)
 
@@ -53,6 +63,7 @@ Casi todo se cambia en `frontend/js/config.js`: segundos antes de avisar, sensib
 ## API
 
 - `GET  /api/salud` — comprobar que el servidor vive
+- `GET  /api/paquetes` — paquetes disponibles
 - `POST /api/sesiones` — guardar una sesión y recibir su informe
 - `GET  /api/sesiones?dispositivo_id=...` — historial
 - `GET  /api/sesiones/{id}?dispositivo_id=...` — informe de una sesión

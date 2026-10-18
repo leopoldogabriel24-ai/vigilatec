@@ -67,6 +67,10 @@
           <input id="cfg-voz" type="checkbox" checked>
           <span>El vigilante habla en voz alta</span>
         </label>
+        <label class="interruptor">
+          <input id="cfg-microfono" type="checkbox">
+          <span>Detectar ruido o plática con el micrófono <small class="opcional">(opcional · solo mide el volumen)</small></span>
+        </label>
       </div>
 
       <div class="aviso-privacidad">
@@ -74,6 +78,7 @@
         <ul>
           <li>Vamos a pedirte permiso para usar la <b>cámara</b>.</li>
           <li>El video <b>se analiza solo dentro de tu navegador</b>. No se graba, no se guarda y <b>nunca se envía</b> a ningún servidor.</li>
+          <li>Si activas el <b>micrófono</b>, solo medimos <b>qué tan fuerte</b> suena el ambiente. No se graba, no se envía y nadie puede escuchar lo que dices.</li>
           <li>Solo se guardan números: tiempo de la sesión y cuántas veces te distrajiste.</li>
           <li>Puedes apagar la cámara en cualquier momento terminando la sesión.</li>
         </ul>
@@ -114,8 +119,10 @@
             <li id="ind-presente">Presente</li>
             <li id="ind-mirada">Mirada</li>
             <li id="ind-movimiento">Quietud</li>
+            <li id="ind-ruido" hidden>Silencio</li>
           </ul>
 
+          <p id="aviso-microfono" class="nota" hidden></p>
           <p class="concentracion-vivo">Concentración: <b id="pct-vivo">—</b> · Distracciones: <b id="num-vivo">0</b></p>
 
           <button id="btn-terminar" class="boton secundario">Terminar sesión</button>
