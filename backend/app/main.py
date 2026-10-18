@@ -5,7 +5,11 @@ from fastapi.staticfiles import StaticFiles
 from .config import CARPETA_FRONTEND
 from sqlalchemy import text
 
-from .database import actualizar_tablas, motor
+import logging
+
+from .database import actualizar_tablas, describir_bd, motor
+
+logging.getLogger("uvicorn.error").warning("Base de datos en uso: %s", describir_bd())
 from .rutas import cuentas, escuelas, paquetes, ranking, sesiones
 
 # Crea las tablas (o agrega columnas nuevas) si hace falta
@@ -19,8 +23,8 @@ app = FastAPI(title="VigilaTec API", version="0.3.0")
 
 @app.get("/api/salud")
 def salud():
-    """Sirve para comprobar que el servidor está vivo."""
-    return {"estado": "ok"}
+    """Sirve para comprobar que el servidor está vivo y qué base de datos usa."""
+    return {"estado": "ok", "base_datos": describir_bd()}
 
 
 # --- Módulos de la API ---

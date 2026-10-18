@@ -5,11 +5,19 @@ from sqlalchemy.orm import DeclarativeBase, sessionmaker
 from .config import DATABASE_URL
 
 # SQLite necesita este ajuste para funcionar con el servidor web
-_opciones = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
+# PostgreSQL: sin "consultas preparadas", porque el pooler de Neon (que reparte conexiones) puede fallar con ellas
+_opciones = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {"prepare_threshold": None}
 
 # pool_pre_ping revisa que la conexión siga viva (Neon "duerme" las conexiones sin uso)
 motor = create_engine(DATABASE_URL, connect_args=_opciones, pool_pre_ping=True)
 SesionBD = sessionmaker(bind=motor, autoflush=False)
+
+
+def describir_bd() -> str:
+    """Qué base de datos se usa, sin mostrar usuario ni contraseña."""
+    if motor.dialect.name == "sqlite":
+        return "sqlite (temporal: se borra al reiniciar Render)"
+    return f"postgresql ({motor.url.host})"
 
 
 class Base(DeclarativeBase):

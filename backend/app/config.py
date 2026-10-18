@@ -12,7 +12,11 @@ CARPETA_FRONTEND = RAIZ / "frontend"
 # Si no hay DATABASE_URL, se usa un archivo SQLite local (útil para pruebas).
 _ruta_sqlite = RAIZ / "backend" / "datos" / "vigilatec.db"
 _ruta_sqlite.parent.mkdir(parents=True, exist_ok=True)  # crea la carpeta si no existe
-DATABASE_URL = os.getenv("DATABASE_URL", f"sqlite:///{_ruta_sqlite}")
+DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
+# Tolera errores comunes al copiar desde Neon: "psql '...'" o comillas alrededor
+if DATABASE_URL.startswith("psql "):
+    DATABASE_URL = DATABASE_URL[5:].strip()
+DATABASE_URL = DATABASE_URL.strip("'\"").strip() or f"sqlite:///{_ruta_sqlite}"
 
 # Los servicios entregan "postgres://" o "postgresql://"; le indicamos a SQLAlchemy
 # que use el conector psycopg (el "traductor" entre Python y PostgreSQL)
