@@ -17,6 +17,7 @@ vigilatec/
 │   │   ├── catalogo.py      Paquetes de uso (aquí se marcan los de pago) y vigilantes permitidos
 │   │   ├── rutas/           Direcciones de la API (aquí irán cuentas, grupos, ranking, IA)
 │   │   ├── rutas/cuentas.py, escuelas.py, ranking.py   Cuentas, salones, ranking y progreso
+│   │   ├── rutas/asistente.py + servicios/asistente.py  Asistente académico con Claude (límites, privacidad)
 │   │   └── servicios/       Informe, acceso a paquetes, seguridad (contraseñas), ranking antitrampa y progreso
 │   └── datos/               Archivo de base de datos local (no se sube a internet)
 ├── frontend/                Lo que ve el usuario en el navegador
@@ -33,6 +34,7 @@ vigilatec/
 │   │   ├── ranking.js       Ranking del salón y entre salones
 │   │   ├── admin.js         Pantalla del administrador (escuelas, salones, códigos)
 │   │   ├── graficas.js      Gráficas de progreso semanal
+│   │   ├── asistente.js     Chat del asistente académico y preguntas de práctica
 │   │   ├── pantallas.js / usuario.js   Navegación y usuario con sesión iniciada
 │   │   ├── vigilancia.js    Decide qué es distracción y su nivel
 │   │   ├── vigilante.js     Dibujo, mensajes y voz del vigilante
@@ -71,6 +73,15 @@ La regla de quién puede usarlo está en `backend/app/servicios/acceso.py` (hoy 
 - `DATABASE_URL`: dirección de PostgreSQL (Neon). Sin ella se usa SQLite local (se borra en Render).
 - `ADMIN_CORREOS`: correos (separados por comas) que al registrarse son administradores.
 - `ZONA_HORARIA` (opcional): por defecto `America/Mexico_City`.
+- `ANTHROPIC_API_KEY`: clave de la API de Claude para el asistente (sin ella, el asistente aparece como "no configurado").
+- `ASISTENTE_LIMITE_DIARIO` (15), `ASISTENTE_LIMITE_GLOBAL` (300): preguntas por estudiante y para toda la app al día.
+- `ASISTENTE_MODELO` (`claude-opus-5-5`), `ASISTENTE_ESFUERZO` (`low`), `ASISTENTE_MAX_TOKENS` (2500): calidad, velocidad y costo.
+
+## Asistente académico
+
+Las instrucciones para Claude están en `backend/app/servicios/asistente.py` (`INSTRUCCIONES`).
+No se guardan preguntas ni respuestas: solo el número de usos por día (tabla `uso_asistente`).
+Antes de enviar se borran correos, teléfonos y CURP. Buscar en internet cuenta como 2 preguntas.
 
 ## Reglas antitrampa del ranking
 
@@ -84,6 +95,7 @@ marca de inicio del servidor, parpadeos mínimos (una foto no parpadea) y cámar
 - `POST /api/cuentas/registro`, `/entrar`, `/salir` · `GET/PATCH/DELETE /api/cuentas/yo`
 - `GET/POST /api/escuelas` · `POST /api/escuelas/{id}/salones` · `POST /api/salones/unirse`
 - `GET /api/ranking/salon` · `GET /api/ranking/escuela` · `GET /api/progreso`
+- `GET /api/asistente/estado` · `POST /api/asistente/preguntar` · `POST /api/asistente/practica`
 - `POST /api/sesiones` — guardar una sesión y recibir su informe
 - `GET  /api/sesiones?dispositivo_id=...` — historial
 - `GET  /api/sesiones/{id}?dispositivo_id=...` — informe de una sesión

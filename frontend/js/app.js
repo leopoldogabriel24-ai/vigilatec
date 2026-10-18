@@ -14,6 +14,7 @@ import { graficaColumnas } from "./graficas.js";
 import "./cuentas.js";   // registro, entrar y "Mi cuenta"
 import "./ranking.js";   // ranking de salón y escuela
 import "./admin.js";     // pantalla del administrador
+import { generarPractica } from "./asistente.js";   // asistente académico con IA
 
 const $ = (id) => document.getElementById(id);
 
@@ -66,6 +67,7 @@ function aplicarPreferencias(p) {
   if (!p.severidad_fija) marcar("severidad", pref.severidad);
   $("cfg-voz").checked = pref.voz;
   $("cfg-microfono").checked = pref.microfono;
+  $("cfg-tema").value = pref.tema ?? "";
   const min = pref.minutos[p.id];
   if (p.duraciones) { if (min) marcar("duracion", min); }
   else if (min >= 1 && min <= 360) $("cfg-minutos").value = min;
@@ -211,11 +213,15 @@ async function comenzar() {
   const apariencia = valorMarcado("apariencia") ?? VIGILANTES[0].id;
   vigilante.voz = $("cfg-voz").checked;
   vigilante.usar(apariencia);
-  guardarPreferencias({ minutos: { ...cargarPreferencias().minutos, [paquete.id]: minutos } });
+  const tema = $("cfg-tema").value.trim();
+  guardarPreferencias({ minutos: { ...cargarPreferencias().minutos, [paquete.id]: minutos }, tema });
+  // Preguntas de práctica durante la sesión (solo si escribió un tema y tiene cuenta)
+  $("sesion-practica").hidden = !tema || !usuarioActual();
+  $("practica-sesion-lista").replaceChildren();
 
   const modo = paquete.modo;
   sesion = {
-    modo, paquete: paquete.id, severidad, apariencia, minutos, detector, microfono: micActivo,
+    modo, paquete: paquete.id, severidad, apariencia, minutos, detector, microfono: micActivo, tema,
     ultimaObs: null,
     temporizador: new Temporizador(minutos * 60),
     vigilancia: new Vigilancia(modo, severidad, (tipo, nivel) => {
@@ -379,6 +385,11 @@ async function finalizar() {
     $("inf-aviso").hidden = false;
   }
   pintarInforme(inf);
+  // Al terminar: invitar a practicar con preguntas sobre lo que estudió
+  $("inf-practica").hidden = !s.tema;
+  $("inf-tema").textContent = s.tema;
+  $("practica-informe-lista").replaceChildren();
+  temaInforme = s.tema;
   mostrar("informe");
 }
 
@@ -433,6 +444,17 @@ function pintarInforme(inf) {
     lista.appendChild(li);
   }
 }
+
+// ---------- Preguntas de práctica (sesión e informe) ----------
+let temaInforme = "";
+$("btn-practica-sesion").addEventListener("click", (e) => {
+  if (sesion?.tema) generarPractica(sesion.tema, $("practica-sesion-lista"), e.currentTarget);
+});
+$("btn-practica-informe").addEventListener("click", (e) => {
+  if (temaInforme) generarPractica(temaInforme, $("practica-informe-lista"), e.currentTarget);
+});
+// Al ver un informe del historial no hay tema que practicar
+alMostrar("historial", () => { $("inf-practica").hidden = true; });
 
 // ---------- Progreso semanal (gráficas) ----------
 const formatoSemana = (iso) => new Date(`${iso}T12:00:00`).toLocaleDateString("es", { day: "numeric", month: "short" }).replace(".", "");

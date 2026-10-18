@@ -35,4 +35,4 @@ PAQUETES_POR_ID = {p["id"]: p for p in PAQUETES}
 APARIENCIAS = {"vigilatec", "profesor", "profesora", "robot", "sargento"}
 
 # Versión del aviso de privacidad. Si cambia el texto, cambia la versión (queda registro de qué aceptó cada quien).
-VERSION_AVISO = "2026-10"
+VERSION_AVISO = "2026-10-2"

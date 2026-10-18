@@ -303,3 +303,37 @@ main { flex: 1; width: 100%; max-width: 1100px; margin: 0 auto; padding: 2rem 16
   .menu { gap: .25rem .75rem; font-size: .9rem; }
   .tabla-ranking { font-size: .82rem; }
 }
+
+/* ===== Fase 4: asistente académico ===== */
+.aviso-asistente { max-width: 900px; margin: 0 auto 1rem; display: flex; flex-wrap: wrap; gap: .5rem 1rem; align-items: center; font-size: .88rem; color: var(--texto-suave); background: var(--azul-tenue); border-radius: 12px; padding: .75rem 1rem; }
+.contador-ia { font-weight: 700; color: var(--azul); background: var(--blanco); border: 1px solid var(--azul); border-radius: 999px; padding: .2rem .75rem; white-space: nowrap; }
+.contador-ia.agotado { color: var(--rojo); border-color: var(--rojo); }
+.chat { display: flex; flex-direction: column; gap: 1rem; }
+.mensajes-chat { display: flex; flex-direction: column; gap: .75rem; max-height: 60vh; overflow-y: auto; padding-right: .25rem; }
+.burbuja { max-width: 88%; padding: .7rem 1rem; border-radius: 14px; line-height: 1.5; overflow-wrap: anywhere; }
+.burbuja.user { align-self: flex-end; background: var(--azul); color: var(--blanco); border-bottom-right-radius: 4px; white-space: pre-wrap; }
+.burbuja.assistant { align-self: flex-start; background: var(--azul-tenue); color: var(--texto); border-bottom-left-radius: 4px; }
+.burbuja.pensando { color: var(--texto-suave); font-style: italic; animation: latido 1.2s ease-in-out infinite; }
+@keyframes latido { 50% { opacity: .5; } }
+.burbuja h4 { margin: .6rem 0 .3rem; color: var(--azul); font-size: 1rem; }
+.burbuja h4:first-child { margin-top: 0; }
+.burbuja p { margin: .35rem 0; }
+.burbuja ul, .burbuja ol { margin: .35rem 0; padding-left: 1.3rem; }
+.burbuja code { background: var(--blanco); padding: 0 .3rem; border-radius: 4px; font-size: .9em; }
+.fuentes { margin-top: .6rem; padding-top: .5rem; border-top: 1px solid var(--borde); font-size: .85rem; }
+.fuentes ul { margin: .25rem 0 0; }
+.fuentes a { color: var(--azul); }
+.form-chat textarea { width: 100%; font: inherit; padding: .7rem .8rem; border: 1px solid var(--borde); border-radius: 10px; resize: vertical; }
+.form-chat textarea:focus { outline: 2px solid var(--azul); border-color: var(--azul); }
+.fila-chat { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: .75rem; margin-top: .5rem; }
+.fila-chat .interruptor { margin-top: 0; }
+.botones-chat { display: flex; gap: .5rem; flex-wrap: wrap; }
+.lista-practica { padding-left: 1.3rem; margin: 1rem 0 .5rem; }
+.lista-practica li { margin-bottom: .75rem; }
+.lista-practica li > p { margin: 0 0 .25rem; font-weight: 600; }
+.lista-practica summary { cursor: pointer; color: var(--azul); font-size: .88rem; font-weight: 600; }
+.lista-practica details p { margin: .3rem 0 0; background: var(--azul-tenue); padding: .5rem .75rem; border-radius: 8px; font-size: .92rem; }
+.practica-sesion { border: 1px solid var(--borde); border-radius: 12px; padding: .75rem; max-height: 45vh; overflow-y: auto; }
+.practica-sesion .boton { width: 100%; }
+.practica-informe { text-align: left; }
+@media (max-width: 760px) { .burbuja { max-width: 100%; } }

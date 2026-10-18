@@ -20,6 +20,7 @@
     </button>
     <nav class="menu">
       <button class="enlace" data-ir="historial">Mi historial</button>
+      <button class="enlace" data-ir="asistente">Asistente</button>
       <button class="enlace" data-ir="ranking" data-solo-cuenta hidden>Ranking</button>
       <button class="enlace" data-ir="admin" data-solo-admin hidden>Mi escuela</button>
       <button class="enlace boton-cuenta" data-ir="entrar" data-sin-cuenta>Entrar</button>
@@ -52,6 +53,11 @@
           <div id="cfg-duraciones" class="segmentos" role="radiogroup" hidden></div>
           <label id="cfg-minutos-libre"><input id="cfg-minutos" type="number" min="1" max="360" step="1" value="25" inputmode="numeric"> minutos</label>
         </div>
+
+        <label class="campo">
+          <span>¿Qué vas a estudiar? <small class="opcional">(opcional · para tus preguntas de práctica)</small></span>
+          <input id="cfg-tema" maxlength="120" placeholder="Ej. Derivadas, Revolución Mexicana, verbos en inglés">
+        </label>
 
         <div class="campo">
           <span>Elige a tu vigilante</span>
@@ -129,6 +135,11 @@
           </ul>
 
           <p id="aviso-microfono" class="nota" hidden></p>
+          <!-- Preguntas de práctica con IA sobre el tema que se está estudiando -->
+          <div id="sesion-practica" class="practica-sesion" hidden>
+            <button id="btn-practica-sesion" class="boton secundario">💡 Preguntas de práctica</button>
+            <div id="practica-sesion-lista"></div>
+          </div>
           <p class="concentracion-vivo">Concentración: <b id="pct-vivo">—</b> · Distracciones: <b id="num-vivo">0</b></p>
 
           <button id="btn-terminar" class="boton secundario">Terminar sesión</button>
@@ -159,6 +170,12 @@
         <ul id="inf-tipos" class="lista-tipos"></ul>
       </div>
 
+      <div id="inf-practica" class="panel practica-informe" hidden>
+        <h3>💡 Pon a prueba lo que estudiaste</h3>
+        <p class="nota">Genera preguntas de práctica sobre <b id="inf-tema"></b> con el asistente académico.</p>
+        <button id="btn-practica-informe" class="boton primario">Generar preguntas</button>
+        <div id="practica-informe-lista"></div>
+      </div>
       <div class="acciones">
         <button class="boton secundario" data-ir="historial">Ver historial</button>
         <button class="boton primario" data-ir="inicio">Nueva sesión</button>
@@ -263,7 +280,7 @@
     <section id="pantalla-privacidad" class="pantalla">
       <h1>Aviso de privacidad</h1>
       <article class="panel texto-legal">
-        <p class="nota">Versión 2026-10 · <b>Borrador</b>: antes de usar VigilaTec con alumnos, el responsable debe completar sus datos de contacto y revisarlo con un especialista legal.</p>
+        <p class="nota">Versión 2026-10-2 · <b>Borrador</b>: antes de usar VigilaTec con alumnos, el responsable debe completar sus datos de contacto y revisarlo con un especialista legal.</p>
         <h3>¿Quién es responsable de tus datos?</h3>
         <p>[Nombre del responsable o de la institución], con contacto en [correo de contacto], es responsable del tratamiento de tus datos personales en VigilaTec.</p>
         <h3>¿Qué datos guardamos?</h3>
@@ -280,8 +297,10 @@
           <li>Calcular el ranking de tu salón y de tu escuela, donde solo aparece tu apodo.</li>
           <li>Que el administrador de tu escuela vea quién está en cada salón (nombre y apodo).</li>
         </ul>
+        <h3>Asistente académico (inteligencia artificial)</h3>
+        <p>Si usas el asistente, el texto de tus preguntas se envía a Anthropic (la empresa que creó a Claude) únicamente para generar la respuesta. VigilaTec <b>no guarda</b> tus preguntas ni las respuestas: solo cuenta cuántas haces al día. Antes de enviarlas borramos automáticamente correos, teléfonos y CURP. Nunca enviamos tu nombre, correo ni cuenta. Por favor no escribas datos personales en tus preguntas.</p>
         <h3>¿Con quién se comparten?</h3>
-        <p>Con nadie para fines comerciales. Los datos se almacenan con proveedores de alojamiento (Render y Neon) que solo los guardan por nuestra cuenta. Tu escuela ve tu nombre, apodo y tus resultados en el ranking.</p>
+        <p>Con nadie para fines comerciales. Los datos se almacenan con proveedores de alojamiento (Render y Neon) que solo los guardan por nuestra cuenta, y las preguntas al asistente se procesan con Anthropic. Tu escuela ve tu nombre, apodo y tus resultados en el ranking.</p>
         <h3>Menores de edad</h3>
         <p>Si tienes menos de 18 años necesitas la autorización de tu madre, padre o tutor, o de tu escuela (que debe contar con esa autorización). Tu tutor puede pedir en cualquier momento que se borren tus datos.</p>
         <h3>Tus derechos</h3>
@@ -365,6 +384,52 @@
           <li>En el ranking solo aparece el apodo, nunca nombres, correos ni edades.</li>
         </ul>
       </details>
+    </section>
+
+
+    <!-- ===== ASISTENTE ACADÉMICO (IA) ===== -->
+    <section id="pantalla-asistente" class="pantalla">
+      <h1>Asistente académico</h1>
+      <p class="sub">Pregunta tus dudas de estudio y recibe explicaciones paso a paso.</p>
+
+      <div id="as-sin-cuenta" class="panel" hidden>
+        <p>Para usar el asistente necesitas una cuenta (así cuidamos que todos tengan preguntas disponibles cada día).</p>
+        <div class="acciones"><button class="boton primario" data-ir="entrar">Entrar o crear cuenta</button></div>
+      </div>
+
+      <div id="as-con-cuenta" hidden>
+        <div class="aviso-asistente">
+          <span id="as-contador" class="contador-ia">—</span>
+          <span>🔒 No escribas datos personales (nombre, teléfono, escuela). Tus preguntas se envían a Claude, la IA de Anthropic, solo para responderte, y VigilaTec <b>no las guarda</b>. La IA puede equivocarse: verifica lo importante con tu profesor o tu libro.</span>
+        </div>
+
+        <div class="panel panel-ancho chat">
+          <div id="as-mensajes" class="mensajes-chat" aria-live="polite">
+            <p class="nota" id="as-bienvenida">Ejemplos: "¿Cómo resuelvo una ecuación de segundo grado?", "Explícame la fotosíntesis", "¿Cuál es la diferencia entre ser y estar?"</p>
+          </div>
+          <form id="form-asistente" class="form-chat">
+            <textarea name="pregunta" rows="3" maxlength="1500" placeholder="Escribe tu duda de estudio…" required></textarea>
+            <div class="fila-chat">
+              <label class="interruptor"><input type="checkbox" name="buscar_web"><span>Buscar fuentes en internet <small class="opcional">(cuenta como 2 preguntas)</small></span></label>
+              <div class="botones-chat">
+                <button type="button" id="btn-nueva-conversacion" class="boton secundario chico">Nueva conversación</button>
+                <button type="submit" class="boton primario">Preguntar</button>
+              </div>
+            </div>
+            <p class="error" data-error hidden></p>
+          </form>
+        </div>
+
+        <div class="panel panel-ancho">
+          <h3>💡 Preguntas de práctica</h3>
+          <form id="form-practica" class="fila-form">
+            <label class="campo"><span>Tema</span><input name="tema" maxlength="120" placeholder="Ej. Leyes de Newton" required></label>
+            <button class="boton primario" type="submit">Generar 5 preguntas</button>
+          </form>
+          <p class="error" data-error hidden></p>
+          <div id="practica-asistente-lista"></div>
+        </div>
+      </div>
     </section>
 
     <!-- ===== ADMINISTRADOR: MI ESCUELA ===== -->

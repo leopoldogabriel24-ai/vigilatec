@@ -70,3 +70,8 @@ export const quitarMiembro = (salonId, usuarioId) => borrar(`api/salones/${salon
 // Ranking
 export const rankingSalon = (periodo, salonId) => pedir(`api/ranking/salon?periodo=${periodo}${salonId ? `&salon_id=${salonId}` : ""}`);
 export const rankingEscuela = (periodo, escuelaId) => pedir(`api/ranking/escuela?periodo=${periodo}${escuelaId ? `&escuela_id=${escuelaId}` : ""}`);
+
+// Asistente académico (IA)
+export const asistenteEstado = () => pedir("api/asistente/estado");
+export const preguntarAsistente = (datos) => post("api/asistente/preguntar", datos);
+export const preguntasPractica = (tema, cantidad = 5) => post("api/asistente/practica", { tema, cantidad });
