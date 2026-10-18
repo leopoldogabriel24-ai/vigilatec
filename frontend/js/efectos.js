@@ -118,6 +118,40 @@ const EFECTOS = {
   },
 };
 
+// ---------- Voces grabadas (mp3 generados con herramientas/generar_voces.mjs) ----------
+const cacheAudio = new Map();
+let vozActual = null;
+
+/** Descarga y prepara un audio (se guarda para no descargarlo dos veces). */
+function cargarAudio(url) {
+  if (!cacheAudio.has(url)) {
+    cacheAudio.set(url, fetch(url).then((r) => r.arrayBuffer()).then((b) => ctx.decodeAudioData(b)));
+  }
+  return cacheAudio.get(url);
+}
+
+/** Reproduce una voz grabada. Devuelve false si no se pudo (para usar la voz del navegador). */
+export async function tocarVoz(url) {
+  if (!ctx || ctx.state !== "running") return false;
+  try {
+    const buffer = await cargarAudio(url);
+    callarVoz();
+    vozActual = ctx.createBufferSource();
+    vozActual.buffer = buffer;
+    vozActual.connect(ctx.destination);
+    vozActual.start();
+    return true;
+  } catch {
+    cacheAudio.delete(url);
+    return false;
+  }
+}
+
+export function callarVoz() {
+  try { vozActual?.stop(); } catch { /* ya terminó */ }
+  vozActual = null;
+}
+
 /** Toca el efecto y devuelve los milisegundos a esperar antes de hablar (0 si no hay efecto o sonido). */
 export function tocarEfecto(nombre) {
   const efecto = EFECTOS[nombre];

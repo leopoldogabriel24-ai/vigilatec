@@ -135,6 +135,7 @@ export const VIGILANTES = [
   {
     id: "penumbra",
     premium: true,
+    vozGrabada: true,   // usa audio/voces/penumbra (herramientas/generar_voces.mjs)
     nombre: "Lord Penumbra",
     descripcion: "Señor oscuro de casco negro. Respira… y te vigila.",
     voz: { tono: 0.1, velocidad: 0.78, genero: "m" },
@@ -166,6 +167,7 @@ export const VIGILANTES = [
   {
     id: "tirano",
     premium: true,
+    vozGrabada: true,   // usa audio/voces/tirano (herramientas/generar_voces.mjs)
     nombre: "El Tirano de Hierro",
     descripcion: "Monarca de máscara de acero y capucha verde. Ordena, no pide.",
     voz: { tono: 0.3, velocidad: 0.8, genero: "m" },
@@ -194,6 +196,7 @@ export const VIGILANTES = [
   {
     id: "ares",
     premium: true,
+    vozGrabada: true,   // usa audio/voces/ares (herramientas/generar_voces.mjs)
     nombre: "Ares, el Espartano",
     descripcion: "Guerrero de piel cenicienta y tatuaje rojo. Implacable.",
     voz: { tono: 0.25, velocidad: 0.85, genero: "m" },
@@ -222,6 +225,7 @@ export const VIGILANTES = [
   {
     id: "buho",
     premium: true,
+    vozGrabada: true,   // usa audio/voces/buho (herramientas/generar_voces.mjs)
     nombre: "El Vigilante Nocturno",
     descripcion: "Justiciero de capa y capucha con orejas de murciélago.",
     voz: { tono: 0.3, velocidad: 0.8, genero: "m" },
@@ -247,6 +251,7 @@ export const VIGILANTES = [
   {
     id: "ojo",
     premium: true,
+    vozGrabada: true,   // usa audio/voces/ojo (herramientas/generar_voces.mjs)
     nombre: "El Ojo Ardiente",
     descripcion: "Ojo de fuego en lo alto de una torre oscura. Todo lo ve.",
     voz: { tono: 0.1, velocidad: 0.7, genero: null },

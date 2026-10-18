@@ -1,7 +1,14 @@
 // Vigilante: el personaje en pantalla, sus expresiones, mensajes y voz.
 import { MENSAJES } from "./config.js";
 import { VIGILANTES, VIGILANTE_POR_ID } from "./vigilantes.js";
-import { tocarEfecto } from "./efectos.js";
+import { callarVoz, tocarEfecto, tocarVoz } from "./efectos.js";
+
+// Índices de las voces grabadas: { personaje: Promise<{ texto: archivo }> }
+const indicesVoz = {};
+function indiceDe(id) {
+  indicesVoz[id] ??= fetch(`audio/voces/${id}/indice.json`).then((r) => (r.ok ? r.json() : {})).catch(() => ({}));
+  return indicesVoz[id];
+}
 
 const azar = (lista) => (Array.isArray(lista) ? lista[Math.floor(Math.random() * lista.length)] : lista);
 
@@ -30,6 +37,7 @@ export class Vigilante {
     this.personaje = VIGILANTE_POR_ID[id] ?? VIGILANTES[0];
     this.svg.innerHTML = this.personaje.svg;
     this.svg.setAttribute("aria-label", `Vigilante: ${this.personaje.nombre}`);
+    if (this.personaje.vozGrabada) indiceDe(this.personaje.id);   // se descarga desde ahora
     this.pintarNivel(this.nivel);
   }
 
@@ -79,12 +87,20 @@ export class Vigilante {
     if (!this.voz || !("speechSynthesis" in window)) return;
     speechSynthesis.cancel();
     clearTimeout(this.esperaVoz);
+    callarVoz();
     // Primero su efecto de sonido (respiración, fuego, pitido…) y luego la voz
     const espera = this.personaje.efecto ? tocarEfecto(this.personaje.efecto) : 0;
-    this.esperaVoz = setTimeout(() => this.decir(texto, nivel), espera);
+    const turno = (this.turnoVoz = (this.turnoVoz ?? 0) + 1);   // si llega otro aviso, este se descarta
+    this.esperaVoz = setTimeout(() => this.decir(texto, nivel, turno), espera);
   }
 
-  decir(texto, nivel) {
+  async decir(texto, nivel, turno = this.turnoVoz) {
+    // Personajes con voz grabada: se reproduce su mp3 (con efectos); si no existe, se usa la voz del navegador
+    if (this.personaje.vozGrabada) {
+      const archivo = (await indiceDe(this.personaje.id))[texto];
+      if (turno !== this.turnoVoz) return;
+      if (archivo && await tocarVoz(`audio/voces/${this.personaje.id}/${archivo}`)) return;
+    }
     // Las palabras en MAYÚSCULAS se pasan a minúsculas para que la voz no las deletree
     const u = new SpeechSynthesisUtterance(texto.replace(/[A-ZÁÉÍÓÚÑÜ]{2,}/g, (p) => p.toLowerCase()));
     const voz = this.elegirVoz();
@@ -97,7 +113,9 @@ export class Vigilante {
   }
 
   callar() {
+    this.turnoVoz = (this.turnoVoz ?? 0) + 1;
     clearTimeout(this.esperaVoz);
+    callarVoz();
     if ("speechSynthesis" in window) speechSynthesis.cancel();
   }
 }
