@@ -110,6 +110,12 @@ const EFECTOS = {
     soplo(t + 0.35, 0.3, "highpass", 1500, [[0.05, 0.2], [0.3, 0.001]]);
     return 650;
   },
+  // Radio del casco: clic y estática antes de hablar
+  radio(t) {
+    tono(1900, "square", [[0.003, 0.06], [0.05, 0.06], [0.06, 0.001]], t);
+    soplo(t + 0.06, 0.35, "bandpass", 2500, [[0.03, 0.18], [0.3, 0.06], [0.35, 0.001]], 0.8);
+    return 420;
+  },
   // Pitido de sistema: "bip-bip"
   pitido(t) {
     tono(1250, "square", [[0.005, 0.07], [0.08, 0.07], [0.09, 0.001]], t);

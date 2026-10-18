@@ -435,3 +435,12 @@ main { flex: 1; width: 100%; max-width: 1100px; margin: 0 auto; padding: 2rem 16
 .vigilante.ap-musgo .ceja { stroke: #5d7840; } .vigilante.ap-musgo .boca { stroke: #5d7840; }
 .vigilante.ap-exo .ceja, .vigilante.ap-exo .boca { stroke: #8a6a1a; stroke-width: 4; }
 .vigilante.nivel-3 .pupila.ojo-blanco, .vigilante.nivel-3 .pupila.luz-blanca { fill: #ff5252; }
+/* Jefe Espartano (prototipo) */
+.vigilante .verde-armadura { fill: #556b3c; stroke: #34431f; stroke-width: 2; }
+.vigilante .verde-armadura-oscuro { fill: #2f3b1e; }
+.vigilante .trazo-armadura { fill: none; stroke: #34431f; stroke-width: 3; stroke-linecap: round; }
+.vigilante .visor-dorado { fill: #e3a33b; stroke: #8a5a12; stroke-width: 2; }
+.vigilante .brillo-visor { fill: none; stroke: rgba(255, 248, 220, .75); stroke-width: 4; stroke-linecap: round; }
+.vigilante .pupila.reflejo { fill: #fff1c7; opacity: .75; }
+.vigilante.ap-jefe .ceja, .vigilante.ap-jefe .boca { stroke: #2f3b1e; }
+.vigilante.nivel-3 .pupila.reflejo { fill: #ff5252; opacity: 1; }

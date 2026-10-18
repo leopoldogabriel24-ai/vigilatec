@@ -335,6 +335,32 @@ export const VIGILANTES = [
       <g class="pupilas"><path class="pupila luz-blanca" d="M74 95 L95 97 L93 103 L76 101 Z"/><path class="pupila luz-blanca" d="M126 95 L105 97 L107 103 L124 101 Z"/></g>
       <path class="boca" d="M86 132 L114 132"/>`,
   },
+  {
+    id: "jefe",
+    premium: true,
+    vozGrabada: true,   // usa audio/voces/jefe (herramientas/generar_voces.mjs)
+    nombre: "Jefe Espartano",
+    descripcion: "Supersoldado de armadura verde y visor dorado. Pocas palabras.",
+    voz: { tono: 0.5, velocidad: 0.9, genero: "m" },
+    efecto: "radio",
+    frases: {
+      calma: "Zona despejada. Mantén la posición.",
+      animo: ["Buen trabajo, soldado.", "Misión en curso. Vas bien."],
+      inicioExamen: "Iniciando misión: examen. Sin margen de error.",
+      inicioEstudio: "Misión de estudio en marcha. Yo vigilo el perímetro.",
+    },
+    decorar: (texto, nivel) => (nivel === 2 ? "Atención, soldado. " : nivel === 3 ? "Esto no es un simulacro. " : "") + texto,
+    svg: `${HALO}
+      <path class="verde-armadura" d="M44 196 Q50 148 100 144 Q150 148 156 196 Z"/>
+      <path class="verde-armadura-oscuro" d="M84 196 L88 158 Q100 162 112 158 L116 196 Z"/>
+      <path class="verde-armadura" d="M56 122 Q52 46 100 40 Q148 46 144 122 L138 148 Q100 162 62 148 Z"/>
+      <path class="trazo-armadura" d="M100 42 V70 M60 120 L70 140 M140 120 L130 140"/>
+      <path class="visor-dorado" d="M64 82 Q100 70 136 82 L132 118 Q100 130 68 118 Z"/>
+      <path class="brillo-visor" d="M72 86 Q96 78 118 82"/>
+      <g class="cejas"><path class="ceja izq" d="M70 78 L96 84"/><path class="ceja der" d="M104 84 L130 78"/></g>
+      <g class="pupilas"><ellipse class="pupila reflejo" cx="84" cy="100" rx="8" ry="4"/><ellipse class="pupila reflejo" cx="116" cy="100" rx="8" ry="4"/></g>
+      <path class="boca" d="M88 138 L112 138"/>`,
+  },
 ];
 
 export const VIGILANTE_POR_ID = Object.fromEntries(VIGILANTES.map((v) => [v.id, v]));

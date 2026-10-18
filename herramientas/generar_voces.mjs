@@ -32,22 +32,33 @@ const VOCES = {
     filtro: "rubberband=pitch=0.92:formant=preserved,highpass=f=180,lowpass=f=5200,equalizer=f=2400:t=q:w=1:g=6,"
       + "aecho=0.7:0.85:3|4.5:0.6|0.5,flanger=delay=0.8:depth=1.5:speed=0.6:regen=40,dynaudnorm=f=150:g=7",
   },
-  // Guerrero: grave, rápido y gritado. Voz base "Klatt" (más natural), temblor leve y saturación cálida de garganta
+  // Guerrero: grave, rápido y gritado. Voz base "Klatt", temblor leve, saturación cálida
+  // y una capa de respiración (voz susurrada) debajo para que suene menos a zumbido de máquina
   ares: {
     variante: "klatt2", tono: 32, velocidad: 158, amplitud: 150,
-    capas: ["rubberband=pitch=0.82:formant=shifted,vibrato=f=0.8:d=0.18,aformat=sample_fmts=s16,vibrato=f=5.5:d=0.06,aformat=sample_fmts=s16",
-      "rubberband=pitch=0.81:formant=shifted,vibrato=f=0.7:d=0.18,aformat=sample_fmts=s16,vibrato=f=4.7:d=0.08,aformat=sample_fmts=s16,adelay=12,volume=0.5"],
-    filtro: "highpass=f=80,lowpass=f=3900,equalizer=f=250:t=q:w=1:g=6,equalizer=f=1800:t=q:w=1:g=3,"
-      + "volume=3,asoftclip=type=tanh:threshold=0.5,aecho=0.5:0.25:55:0.15,deesser,dynaudnorm=f=150:g=7",
+    capas: ["rubberband=pitch=0.82:formant=shifted,vibrato=f=5.5:d=0.05,aformat=sample_fmts=s16",
+      "rubberband=pitch=0.81:formant=shifted,adelay=12,volume=0.45",
+      "rubberband=pitch=0.85,highpass=f=400,volume=0.9"],
+    filtro: "highpass=f=80,lowpass=f=3400,equalizer=f=250:t=q:w=1:g=6,equalizer=f=1500:t=q:w=1:g=2,"
+      + "volume=2.5,asoftclip=type=tanh:threshold=0.55,aecho=0.6:0.3:60:0.18,deesser,dynaudnorm=f=150:g=7",
+    segundaVariante: "whisper",
   },
-  // Justiciero nocturno: susurro rasposo con voz grave "Klatt" por debajo; aspereza cálida, no digital
+  // Justiciero nocturno: susurro rasposo y voz grave "Klatt" debajo, con mucho aire y aspereza cálida
   buho: {
-    variante: "whisper", tono: 20, velocidad: 125,
-    capas: ["rubberband=pitch=0.85,highpass=f=300,volume=2.4",
-      "rubberband=pitch=0.62:formant=shifted,vibrato=f=0.6:d=0.2,aformat=sample_fmts=s16,vibrato=f=4.5:d=0.05,aformat=sample_fmts=s16,volume=0.5,lowpass=f=900"],
-    filtro: "highpass=f=90,lowpass=f=6000,equalizer=f=3200:t=q:w=1:g=4,volume=2,asoftclip=type=atan:threshold=0.4,"
-      + "aecho=0.5:0.2:22:0.1,deesser,dynaudnorm=f=150:g=8",
+    variante: "whisper", tono: 20, velocidad: 122,
+    capas: ["rubberband=pitch=0.85,highpass=f=300,volume=2.2",
+      "rubberband=pitch=0.62:formant=shifted,vibrato=f=4.5:d=0.04,aformat=sample_fmts=s16,volume=0.6,lowpass=f=1100"],
+    filtro: "highpass=f=90,lowpass=f=5000,equalizer=f=3000:t=q:w=1:g=3,volume=2,asoftclip=type=atan:threshold=0.45,"
+      + "aecho=0.6:0.3:35:0.15,deesser,dynaudnorm=f=150:g=8",
     segundaVariante: "klatt2",
+  },
+  // Supersoldado: grave, calmado y seco, escuchado a través del radio del casco
+  jefe: {
+    variante: "klatt2", tono: 26, velocidad: 138,
+    capas: ["rubberband=pitch=0.84:formant=shifted", "rubberband=pitch=0.86,highpass=f=500,volume=0.5"],
+    filtro: "highpass=f=320,lowpass=f=3300,equalizer=f=1400:t=q:w=1.2:g=5,volume=2,asoftclip=type=tanh:threshold=0.6,"
+      + "aecho=0.5:0.25:8:0.12,deesser,dynaudnorm=f=150:g=7",
+    segundaVariante: "whisper",
   },
   // Ojo de fuego: gravísimo y muy lento, varias voces y un eco que crece
   ojo: {
