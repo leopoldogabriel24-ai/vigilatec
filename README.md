@@ -16,7 +16,8 @@ vigilatec/
 │   │   ├── esquemas.py      Forma y validación de los datos
 │   │   ├── catalogo.py      Paquetes de uso (aquí se marcan los de pago) y vigilantes permitidos
 │   │   ├── rutas/           Direcciones de la API (aquí irán cuentas, grupos, ranking, IA)
-│   │   └── servicios/       Cálculos (informe estadístico) y reglas de acceso a paquetes
+│   │   ├── rutas/cuentas.py, escuelas.py, ranking.py   Cuentas, salones, ranking y progreso
+│   │   └── servicios/       Informe, acceso a paquetes, seguridad (contraseñas), ranking antitrampa y progreso
 │   └── datos/               Archivo de base de datos local (no se sube a internet)
 ├── frontend/                Lo que ve el usuario en el navegador
 │   ├── index.html           Todas las pantallas
@@ -28,6 +29,11 @@ vigilatec/
 │   │   ├── microfono.js     Micrófono opcional: solo mide volumen, nunca graba
 │   │   ├── vigilantes.js    Los 5 personajes: dibujo, voz y forma de hablar
 │   │   ├── preferencias.js  Recuerda las elecciones del estudiante en su navegador
+│   │   ├── cuentas.js       Registro (privacidad y consentimiento), entrar y "Mi cuenta"
+│   │   ├── ranking.js       Ranking del salón y entre salones
+│   │   ├── admin.js         Pantalla del administrador (escuelas, salones, códigos)
+│   │   ├── graficas.js      Gráficas de progreso semanal
+│   │   ├── pantallas.js / usuario.js   Navegación y usuario con sesión iniciada
 │   │   ├── vigilancia.js    Decide qué es distracción y su nivel
 │   │   ├── vigilante.js     Dibujo, mensajes y voz del vigilante
 │   │   ├── temporizador.js  Reloj de la sesión
@@ -60,10 +66,24 @@ La regla de quién puede usarlo está en `backend/app/servicios/acceso.py` (hoy 
    ```
 4. Abre http://localhost:8000 en Chrome o Edge.
 
+## Base de datos y variables en Render
+
+- `DATABASE_URL`: dirección de PostgreSQL (Neon). Sin ella se usa SQLite local (se borra en Render).
+- `ADMIN_CORREOS`: correos (separados por comas) que al registrarse son administradores.
+- `ZONA_HORARIA` (opcional): por defecto `America/Mexico_City`.
+
+## Reglas antitrampa del ranking
+
+En `backend/app/servicios/ranking.py`: mínimo 10 minutos por sesión, máximo 8 horas al día,
+marca de inicio del servidor, parpadeos mínimos (una foto no parpadea) y cámara no tapada.
+
 ## API
 
 - `GET  /api/salud` — comprobar que el servidor vive
 - `GET  /api/paquetes` — paquetes disponibles
+- `POST /api/cuentas/registro`, `/entrar`, `/salir` · `GET/PATCH/DELETE /api/cuentas/yo`
+- `GET/POST /api/escuelas` · `POST /api/escuelas/{id}/salones` · `POST /api/salones/unirse`
+- `GET /api/ranking/salon` · `GET /api/ranking/escuela` · `GET /api/progreso`
 - `POST /api/sesiones` — guardar una sesión y recibir su informe
 - `GET  /api/sesiones?dispositivo_id=...` — historial
 - `GET  /api/sesiones/{id}?dispositivo_id=...` — informe de una sesión

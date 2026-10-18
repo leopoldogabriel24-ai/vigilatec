@@ -49,6 +49,8 @@ export const DETECCION = {
   alejadoMin: 0.55,        // si la cara se ve menor a 55% de lo normal, te alejaste o te paraste
   graciaSeg: 1,            // segundos "bien" necesarios para dar por terminada una distracción
   cadaMs: 100,             // analizar la cámara 10 veces por segundo
+  parpadeoCerrado: 0.5,    // ojos "cerrados" por encima de este valor (0 a 1)
+  parpadeoAbierto: 0.3,    // y "abiertos" otra vez por debajo de este
   // Micrófono (solo volumen)
   ruidoMargenDb: 15,       // cuántos decibeles más fuerte que lo normal del lugar se considera ruido
   ruidoMinimoDb: -50,      // en un cuarto muy silencioso, no avisar por sonidos muy bajitos

@@ -15,6 +15,8 @@ export class Detector {
     this.muestrasCalib = [];
     this.historial = [];        // posiciones recientes de la nariz (para medir movimiento)
     this.ultimoTiempoVideo = -1;
+    this.parpadeos = 0;         // antitrampa: una foto frente a la cámara nunca parpadea
+    this.ojosCerrados = false;
   }
 
   /** Pide permiso y enciende la cámara. */
@@ -67,6 +69,10 @@ export class Detector {
     if (medidas.length > 1 && medidas[1].ancho > medidas[0].ancho) i = 1;
     const m = medidas[i];
     const ojos = leerOjos(r.faceBlendshapes[i]);
+
+    // Cuenta un parpadeo cada vez que los ojos pasan de abiertos a cerrados
+    if (ojos.cerrados > DETECCION.parpadeoCerrado && !this.ojosCerrados) { this.ojosCerrados = true; this.parpadeos++; }
+    else if (ojos.cerrados < DETECCION.parpadeoAbierto) this.ojosCerrados = false;
 
     // Durante los primeros segundos solo aprendemos la postura normal
     if (!this.base) {
@@ -124,7 +130,11 @@ function leerOjos(blend) {
   const g = (k) => s[k] ?? 0;
   const ladoA = (g("eyeLookOutLeft") + g("eyeLookInRight")) / 2;
   const ladoB = (g("eyeLookInLeft") + g("eyeLookOutRight")) / 2;
-  return { lado: Math.max(ladoA, ladoB), arriba: (g("eyeLookUpLeft") + g("eyeLookUpRight")) / 2 };
+  return {
+    lado: Math.max(ladoA, ladoB),
+    arriba: (g("eyeLookUpLeft") + g("eyeLookUpRight")) / 2,
+    cerrados: (g("eyeBlinkLeft") + g("eyeBlinkRight")) / 2,
+  };
 }
 
 // Distancia recorrida por la nariz por segundo

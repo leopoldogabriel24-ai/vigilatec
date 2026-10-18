@@ -233,3 +233,73 @@ main { flex: 1; width: 100%; max-width: 1100px; margin: 0 auto; padding: 2rem 16
   .lista-tipos li { grid-template-columns: 7rem 1fr auto; }
   .tabla { font-size: .82rem; }
 }
+
+/* ===== Fase 3: menú, formularios, ranking, escuela y gráficas ===== */
+.menu { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .25rem 1rem; }
+.boton-cuenta { background: var(--blanco); color: var(--azul); text-decoration: none; padding: .3rem .8rem; border-radius: 999px; }
+.enlace-texto { background: none; border: 0; padding: 0; color: var(--azul); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
+.centrado { text-align: center; }
+
+.formulario { max-width: 520px; }
+.campo input:not([type=radio]):not([type=checkbox]):not([type=number]) {
+  width: 100%; padding: .65rem .8rem; font: inherit; border-radius: 8px;
+  border: 1px solid var(--borde); background: var(--blanco); color: var(--texto);
+}
+.campo input:focus { outline: 2px solid var(--azul); border-color: var(--azul); }
+.fila-form { display: flex; flex-wrap: wrap; align-items: flex-end; gap: .75rem; }
+.fila-form .campo { flex: 1 1 220px; margin-bottom: 0; }
+.bloque-menor { border: 1px solid var(--borde); border-radius: 12px; padding: 1rem; margin: 0 0 1.1rem; background: var(--azul-tenue); }
+.bloque-menor legend { font-weight: 700; color: var(--azul); padding: 0 .3rem; }
+.bloque-menor .segmentos { margin: .5rem 0 1rem; }
+.texto-legal { max-width: 760px; }
+.texto-legal h3 { margin-top: 1.2rem; }
+.panel-ancho { max-width: 900px; }
+.zona-peligro summary { cursor: pointer; font-weight: 600; color: var(--rojo); }
+.boton.peligro { background: var(--rojo); border-color: var(--rojo); color: var(--blanco); }
+.boton.chico { padding: .4rem .8rem; font-size: .85rem; }
+.nota-ranking { text-align: center; margin: 0 auto 1rem; max-width: 620px; padding: .6rem 1rem; border-radius: 10px; font-weight: 600; }
+.nota-ranking.si { background: var(--verde-fondo); color: var(--verde); }
+.nota-ranking.no { background: var(--azul-tenue); color: var(--texto-suave); }
+
+/* Ranking */
+.controles-ranking { display: flex; flex-wrap: wrap; justify-content: center; gap: .75rem 1.5rem; margin-bottom: 1rem; }
+.tabla-ranking .posicion { width: 3rem; font-size: 1.1rem; text-align: center; }
+.tabla-ranking .num { text-align: right; font-variant-numeric: tabular-nums; }
+.tabla-ranking th:nth-child(n+3) { text-align: right; }
+.tabla-ranking .fuerte { font-weight: 700; color: var(--azul); }
+.tabla-ranking tbody tr { cursor: default; }
+.tabla-ranking tr.es-tu { background: var(--azul-tenue); font-weight: 600; }
+
+/* Escuela (administrador) */
+.escuela-cabecera { display: flex; justify-content: space-between; align-items: center; gap: .5rem; flex-wrap: wrap; }
+.lista-salones { list-style: none; padding: 0; margin: 0 0 1rem; }
+.salon-admin { border-top: 1px solid var(--borde); padding: .8rem 0; }
+.salon-cabecera { display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; }
+.codigo { font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; font-size: 1.15rem; font-weight: 700; letter-spacing: .15em; color: var(--azul); background: var(--azul-tenue); padding: .15rem .5rem; border-radius: 6px; }
+.botones-salon { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .5rem; }
+.lista-alumnos { list-style: none; padding: 0; margin: .6rem 0 0; }
+.lista-alumnos li { display: flex; justify-content: space-between; gap: .5rem; padding: .35rem 0; border-bottom: 1px dashed var(--borde); font-size: .92rem; }
+
+/* Gráficas de progreso */
+.graficas { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem 1.5rem; }
+.grafica { margin: 0; }
+.grafica figcaption { font-size: .9rem; font-weight: 600; color: var(--texto-suave); margin-bottom: .25rem; }
+.lienzo-grafica { position: relative; }
+.lienzo-grafica svg { width: 100%; height: auto; display: block; overflow: visible; }
+.lienzo-grafica .guia { stroke: #e3eaf2; stroke-width: 1; }
+.lienzo-grafica .eje { stroke: #c9d8e8; stroke-width: 1; }
+.lienzo-grafica .texto-eje { font-size: 10px; fill: var(--texto-suave); }
+.lienzo-grafica .texto-valor { font-size: 11px; font-weight: 700; fill: var(--texto); }
+.lienzo-grafica .columna { fill: var(--azul); transition: opacity .15s; }
+.lienzo-grafica .zona { fill: transparent; }
+.lienzo-grafica .barra-grafica { cursor: default; outline: none; }
+.lienzo-grafica .barra-grafica.activa .zona { fill: var(--azul-tenue); }
+.globo-grafica { position: absolute; transform: translate(-50%, calc(-100% - 8px)); background: var(--texto); color: var(--blanco); font-size: .78rem; font-weight: 600; padding: .3rem .55rem; border-radius: 6px; white-space: nowrap; pointer-events: none; }
+.tabla-datos { margin-top: .75rem; }
+.tabla-datos summary { cursor: pointer; color: var(--azul); font-weight: 600; font-size: .9rem; }
+
+@media (max-width: 760px) {
+  .barra { flex-wrap: wrap; gap: .4rem; }
+  .menu { gap: .25rem .75rem; font-size: .9rem; }
+  .tabla-ranking { font-size: .82rem; }
+}

@@ -8,6 +8,12 @@ import { VIGILANTES } from "./vigilantes.js";
 import { cargarPreferencias, guardarPreferencias } from "./preferencias.js";
 import { Temporizador, formatoReloj, formatoDuracion } from "./temporizador.js";
 import * as api from "./api.js";
+import { alMostrar, mostrar } from "./pantallas.js";
+import { alCambiarUsuario, cargarUsuario, usuarioActual } from "./usuario.js";
+import { graficaColumnas } from "./graficas.js";
+import "./cuentas.js";   // registro, entrar y "Mi cuenta"
+import "./ranking.js";   // ranking de salón y escuela
+import "./admin.js";     // pantalla del administrador
 
 const $ = (id) => document.getElementById(id);
 
@@ -67,11 +73,11 @@ function aplicarPreferencias(p) {
 }
 
 // ---------- Navegación entre pantallas ----------
-function mostrar(nombre) {
-  document.querySelectorAll(".pantalla").forEach((p) => p.classList.toggle("activa", p.id === `pantalla-${nombre}`));
-  window.scrollTo(0, 0);
-  if (nombre === "historial") cargarHistorial();
-}
+alMostrar("historial", () => { cargarHistorial(); cargarProgreso(); });
+alCambiarUsuario((u) => {
+  $("hist-sub").textContent = u ? "Sesiones guardadas en tu cuenta." : "Sesiones guardadas desde este navegador.";
+});
+cargarUsuario();
 
 document.querySelectorAll("[data-ir]").forEach((b) =>
   b.addEventListener("click", () => {
@@ -230,6 +236,8 @@ async function comenzar() {
   vigilante.mostrar("Mira al frente unos segundos. Estoy aprendiendo cómo te ves.", 0);
   mantenerPantallaEncendida();
   sesion.intervalo = setInterval(ciclo, DETECCION.cadaMs);
+  // Antitrampa: el servidor anota la hora de inicio (si falla, la sesión sigue pero no cuenta para el ranking)
+  api.iniciarSesion().then((r) => { if (sesion) sesion.tokenInicio = r.token_inicio; }).catch(() => {});
 }
 
 function mostrarError(texto) {
@@ -357,6 +365,8 @@ async function finalizar() {
     duracion_planeada: s.minutos * 60,
     duracion_real: seg,
     distracciones: s.vigilancia.terminar(seg),
+    token_inicio: s.tokenInicio ?? null,
+    parpadeos: s.detector.parpadeos,
   };
 
   let inf;
@@ -393,6 +403,11 @@ function informeLocal(d) {
 const nombrePaquete = (id) => paquetes.find((p) => p.id === id)?.nombre ?? (id === "examen" ? "Examen" : "Estudio");
 
 function pintarInforme(inf) {
+  // ¿Cuenta para el ranking? Solo se muestra a quien tiene cuenta
+  const aviso = $("inf-ranking");
+  aviso.hidden = !usuarioActual() || inf.valida_ranking === undefined;
+  aviso.className = `nota-ranking ${inf.valida_ranking ? "si" : "no"}`;
+  aviso.textContent = inf.valida_ranking ? "🏆 Esta sesión cuenta para el ranking." : `ℹ️ Esta sesión no cuenta para el ranking: ${inf.motivo_no_valida ?? ""}`;
   $("inf-paquete").textContent = inf.paquete ? nombrePaquete(inf.paquete) : "";
   $("inf-mensaje").textContent = inf.mensaje;
   $("inf-pct").textContent = `${Math.round(inf.porcentaje_concentracion)}%`;
@@ -416,6 +431,29 @@ function pintarInforme(inf) {
     li.children[0].textContent = NOMBRES_TIPO[tipo] ?? tipo;
     li.children[2].textContent = `${n} · ${formatoDuracion(inf.tiempo_por_tipo[tipo] ?? 0)}`;
     lista.appendChild(li);
+  }
+}
+
+// ---------- Progreso semanal (gráficas) ----------
+const formatoSemana = (iso) => new Date(`${iso}T12:00:00`).toLocaleDateString("es", { day: "numeric", month: "short" }).replace(".", "");
+
+async function cargarProgreso() {
+  try {
+    const semanas = await api.progreso(8);
+    graficaColumnas($("graf-minutos"), semanas.map((w) => ({ etiqueta: formatoSemana(w.semana), valor: w.minutos_concentrados, detalle: `Semana del ${formatoSemana(w.semana)}` })),
+      { titulo: "Minutos concentrado por semana", formato: (v) => `${v}` });
+    graficaColumnas($("graf-porcentaje"), semanas.map((w) => ({ etiqueta: formatoSemana(w.semana), valor: Math.round(w.porcentaje), detalle: `Semana del ${formatoSemana(w.semana)}` })),
+      { titulo: "Concentración promedio (%)", formato: (v) => `${v}%`, maximo: 100 });
+    // Los mismos datos en tabla (más reciente primero)
+    const filas = $("prog-filas");
+    filas.innerHTML = "";
+    for (const w of [...semanas].reverse()) {
+      const tr = filas.insertRow();
+      for (const c of [formatoSemana(w.semana), w.sesiones, w.minutos_concentrados, `${Math.round(w.porcentaje)}%`, w.distracciones]) tr.insertCell().textContent = c;
+    }
+  } catch {
+    $("graf-minutos").textContent = "No se pudo cargar tu progreso.";
+    $("graf-porcentaje").textContent = "";
   }
 }
 

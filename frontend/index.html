@@ -18,7 +18,13 @@
       <img src="img/logo-icono.png" alt="" width="38" height="36">
       <span>vigila<b>tec</b></span>
     </button>
-    <button class="enlace" data-ir="historial">Mi historial</button>
+    <nav class="menu">
+      <button class="enlace" data-ir="historial">Mi historial</button>
+      <button class="enlace" data-ir="ranking" data-solo-cuenta hidden>Ranking</button>
+      <button class="enlace" data-ir="admin" data-solo-admin hidden>Mi escuela</button>
+      <button class="enlace boton-cuenta" data-ir="entrar" data-sin-cuenta>Entrar</button>
+      <button class="enlace boton-cuenta" data-ir="cuenta" data-solo-cuenta hidden><span id="menu-apodo">Mi cuenta</span></button>
+    </nav>
   </header>
 
   <main>
@@ -136,6 +142,7 @@
       <p id="inf-paquete" class="etiqueta-paquete"></p>
       <p id="inf-mensaje" class="sub"></p>
       <p id="inf-aviso" class="error" hidden></p>
+      <p id="inf-ranking" class="nota-ranking" hidden></p>
 
       <div class="informe">
         <div class="anillo" id="inf-anillo"><span id="inf-pct">0%</span><small>concentración</small></div>
@@ -161,7 +168,22 @@
     <!-- ===== PANTALLA 5: HISTORIAL ===== -->
     <section id="pantalla-historial" class="pantalla">
       <h1>Mi historial</h1>
-      <p class="sub">Sesiones guardadas desde este navegador.</p>
+      <p class="sub" id="hist-sub">Sesiones guardadas desde este navegador.</p>
+
+      <!-- Progreso por semana (últimas 8 semanas) -->
+      <div class="panel panel-ancho">
+        <h3>Mi progreso por semana</h3>
+        <div class="graficas">
+          <figure id="graf-minutos" class="grafica"></figure>
+          <figure id="graf-porcentaje" class="grafica"></figure>
+        </div>
+        <details class="tabla-datos">
+          <summary>Ver los datos en tabla</summary>
+          <table class="tabla"><thead><tr><th>Semana</th><th>Sesiones</th><th>Min. concentrado</th><th>Concentración</th><th>Distr.</th></tr></thead>
+            <tbody id="prog-filas"></tbody></table>
+        </details>
+      </div>
+
       <div class="panel">
         <table class="tabla">
           <thead><tr><th>Fecha</th><th>Paquete</th><th>Tiempo</th><th>Distr.</th><th>Concentr.</th></tr></thead>
@@ -170,6 +192,191 @@
         <p id="hist-vacio" class="sub" hidden>Aún no tienes sesiones. ¡Empieza la primera!</p>
       </div>
       <div class="acciones"><button class="boton primario" data-ir="inicio">Volver al inicio</button></div>
+    </section>
+
+    <!-- ===== ENTRAR ===== -->
+    <section id="pantalla-entrar" class="pantalla">
+      <h1>Entrar a tu cuenta</h1>
+      <p class="sub">Con una cuenta guardas tu historial en cualquier dispositivo y participas en el ranking de tu salón.</p>
+      <form id="form-entrar" class="panel formulario" novalidate>
+        <label class="campo"><span>Correo</span><input name="correo" type="email" autocomplete="email" required></label>
+        <label class="campo"><span>Contraseña</span><input name="contrasena" type="password" autocomplete="current-password" required></label>
+        <p class="error" data-error hidden></p>
+        <div class="acciones"><button class="boton primario" type="submit">Entrar</button></div>
+        <p class="nota centrado">¿No tienes cuenta? <button type="button" class="enlace-texto" data-ir="registro">Crear una cuenta</button></p>
+      </form>
+    </section>
+
+    <!-- ===== REGISTRO (con aviso de privacidad y consentimiento) ===== -->
+    <section id="pantalla-registro" class="pantalla">
+      <h1>Crear cuenta</h1>
+      <form id="form-registro" class="panel formulario" novalidate>
+        <label class="campo"><span>Nombre completo <small class="opcional">(solo lo ve tu escuela)</small></span><input name="nombre" autocomplete="name" maxlength="80" required></label>
+        <label class="campo"><span>Apodo <small class="opcional">(es lo único que aparece en el ranking)</small></span><input name="apodo" maxlength="30" required></label>
+        <label class="campo"><span>Correo</span><input name="correo" type="email" autocomplete="email" required></label>
+        <label class="campo"><span>Contraseña <small class="opcional">(mínimo 8 caracteres)</small></span><input name="contrasena" type="password" autocomplete="new-password" minlength="8" required></label>
+
+        <div class="campo">
+          <span>¿Tienes menos de 18 años?</span>
+          <div class="segmentos" role="radiogroup">
+            <label><input type="radio" name="es_menor" value="no" checked><span>No, soy mayor de edad</span></label>
+            <label><input type="radio" name="es_menor" value="si"><span>Sí, soy menor de edad</span></label>
+          </div>
+        </div>
+
+        <!-- Solo para menores de edad -->
+        <fieldset id="bloque-menor" class="bloque-menor" hidden>
+          <legend>Consentimiento para menores de edad</legend>
+          <p class="nota">Para usar VigilaTec necesitas la autorización de tu madre, padre o tutor, o de tu escuela.</p>
+          <div class="segmentos" role="radiogroup">
+            <label><input type="radio" name="consentimiento_tipo" value="tutor" checked><span>Mi madre, padre o tutor</span></label>
+            <label><input type="radio" name="consentimiento_tipo" value="escuela"><span>Mi escuela</span></label>
+          </div>
+          <div id="bloque-tutor">
+            <label class="campo"><span>Nombre de tu madre, padre o tutor</span><input name="tutor_nombre" maxlength="80"></label>
+            <label class="campo"><span>Correo de tu madre, padre o tutor</span><input name="tutor_correo" type="email"></label>
+            <label class="interruptor"><input type="checkbox" name="confirma_tutor"><span>Mi madre, padre o tutor leyó el aviso de privacidad y autoriza que use VigilaTec.</span></label>
+          </div>
+          <div id="bloque-escuela" hidden>
+            <label class="interruptor"><input type="checkbox" name="confirma_escuela"><span>Mi escuela me pidió usar VigilaTec y cuenta con la autorización de mi madre, padre o tutor.</span></label>
+          </div>
+        </fieldset>
+
+        <div class="aviso-privacidad">
+          <h3>🔒 En resumen</h3>
+          <ul>
+            <li>La cámara y el micrófono se analizan <b>solo en tu dispositivo</b>: nunca guardamos ni enviamos video, audio ni fotos.</li>
+            <li>Guardamos tu correo, nombre, apodo y las estadísticas de tus sesiones (tiempos y distracciones).</li>
+            <li>En el ranking solo aparece tu <b>apodo</b> (o "Estudiante anónimo" si lo prefieres).</li>
+            <li>Puedes borrar tu cuenta y todos tus datos cuando quieras.</li>
+          </ul>
+        </div>
+        <label class="interruptor"><input type="checkbox" name="acepto_privacidad"><span>Leí y acepto el <button type="button" class="enlace-texto" data-ir="privacidad">Aviso de privacidad</button>.</span></label>
+
+        <p class="error" data-error hidden></p>
+        <div class="acciones"><button class="boton primario" type="submit">Crear cuenta</button></div>
+        <p class="nota centrado">¿Ya tienes cuenta? <button type="button" class="enlace-texto" data-ir="entrar">Entrar</button></p>
+      </form>
+    </section>
+
+    <!-- ===== AVISO DE PRIVACIDAD ===== -->
+    <section id="pantalla-privacidad" class="pantalla">
+      <h1>Aviso de privacidad</h1>
+      <article class="panel texto-legal">
+        <p class="nota">Versión 2026-10 · <b>Borrador</b>: antes de usar VigilaTec con alumnos, el responsable debe completar sus datos de contacto y revisarlo con un especialista legal.</p>
+        <h3>¿Quién es responsable de tus datos?</h3>
+        <p>[Nombre del responsable o de la institución], con contacto en [correo de contacto], es responsable del tratamiento de tus datos personales en VigilaTec.</p>
+        <h3>¿Qué datos guardamos?</h3>
+        <ul>
+          <li><b>De tu cuenta:</b> correo, nombre, apodo, contraseña (guardada cifrada, nadie puede leerla) y si eres menor de edad.</li>
+          <li><b>Si eres menor de edad:</b> el tipo de autorización (tutor o escuela) y, si es de tu tutor, su nombre y correo.</li>
+          <li><b>De tus sesiones:</b> fecha, duración, tiempo concentrado, número y tipo de distracciones, número de parpadeos y el salón al que perteneces.</li>
+        </ul>
+        <h3>¿Qué datos NO guardamos?</h3>
+        <p>El video de tu cámara y el sonido de tu micrófono <b>se analizan únicamente dentro de tu navegador</b>. No se graban, no se guardan y nunca se envían a ningún servidor. Del micrófono solo se mide el volumen.</p>
+        <h3>¿Para qué usamos tus datos?</h3>
+        <ul>
+          <li>Darte acceso a tu cuenta y mostrarte tu historial, informes y progreso.</li>
+          <li>Calcular el ranking de tu salón y de tu escuela, donde solo aparece tu apodo.</li>
+          <li>Que el administrador de tu escuela vea quién está en cada salón (nombre y apodo).</li>
+        </ul>
+        <h3>¿Con quién se comparten?</h3>
+        <p>Con nadie para fines comerciales. Los datos se almacenan con proveedores de alojamiento (Render y Neon) que solo los guardan por nuestra cuenta. Tu escuela ve tu nombre, apodo y tus resultados en el ranking.</p>
+        <h3>Menores de edad</h3>
+        <p>Si tienes menos de 18 años necesitas la autorización de tu madre, padre o tutor, o de tu escuela (que debe contar con esa autorización). Tu tutor puede pedir en cualquier momento que se borren tus datos.</p>
+        <h3>Tus derechos</h3>
+        <p>Puedes acceder a tus datos, corregirlos (cambiar tu apodo), oponerte a aparecer en el ranking ("Estudiante anónimo") y <b>borrar tu cuenta con todos tus datos</b> desde "Mi cuenta". Para cualquier otra solicitud escribe a [correo de contacto].</p>
+        <h3>Cookies</h3>
+        <p>Usamos una sola cookie, necesaria para mantener tu sesión iniciada. No usamos cookies de publicidad ni de rastreo.</p>
+        <h3>Cambios a este aviso</h3>
+        <p>Si este aviso cambia, actualizaremos su versión y te lo haremos saber en la aplicación.</p>
+      </article>
+      <div class="acciones"><button class="boton secundario" data-volver>Volver</button></div>
+    </section>
+
+    <!-- ===== MI CUENTA ===== -->
+    <section id="pantalla-cuenta" class="pantalla">
+      <h1>Mi cuenta</h1>
+      <div class="panel">
+        <h3>Mis datos</h3>
+        <p><b id="cta-nombre"></b><br><span id="cta-correo" class="nota"></span></p>
+        <form id="form-apodo" class="fila-form">
+          <label class="campo"><span>Apodo para el ranking</span><input name="apodo" maxlength="30" required></label>
+          <button class="boton secundario" type="submit">Guardar</button>
+        </form>
+        <label class="interruptor"><input type="checkbox" id="cta-ranking"><span>Mostrar mi apodo en el ranking <small class="opcional">(si lo desactivas aparecerás como "Estudiante anónimo")</small></span></label>
+        <p class="nota" data-mensaje></p>
+        <p class="error" data-error hidden></p>
+      </div>
+
+      <div class="panel">
+        <h3>Mi salón</h3>
+        <div id="cta-con-salon" hidden>
+          <p>Estás en <b id="cta-salon"></b> de <b id="cta-escuela"></b>.</p>
+          <button id="btn-salir-salon" class="boton secundario">Salir del salón</button>
+        </div>
+        <form id="form-unirse" class="fila-form">
+          <label class="campo"><span>Código de invitación <small class="opcional">(te lo da tu escuela)</small></span><input name="codigo" maxlength="12" autocapitalize="characters" placeholder="Ej. K7P2QX" required></label>
+          <button class="boton primario" type="submit">Unirme</button>
+        </form>
+        <p class="error" data-error hidden></p>
+      </div>
+
+      <div class="acciones">
+        <button id="btn-salir" class="boton secundario">Cerrar sesión</button>
+      </div>
+
+      <details class="panel zona-peligro">
+        <summary>Borrar mi cuenta</summary>
+        <p>Se borrarán tu cuenta y <b>todas</b> tus sesiones. No se puede deshacer.</p>
+        <form id="form-borrar" class="fila-form">
+          <label class="campo"><span>Escribe tu contraseña para confirmar</span><input name="contrasena" type="password" autocomplete="current-password" required></label>
+          <button class="boton peligro" type="submit">Borrar todo</button>
+        </form>
+        <p class="error" data-error hidden></p>
+      </details>
+    </section>
+
+    <!-- ===== RANKING ===== -->
+    <section id="pantalla-ranking" class="pantalla">
+      <h1>Ranking</h1>
+      <p class="sub" id="rk-sub"></p>
+      <div class="controles-ranking">
+        <div class="segmentos" role="radiogroup" aria-label="Qué ranking ver">
+          <label><input type="radio" name="rk-vista" value="salon" checked><span>Mi salón</span></label>
+          <label><input type="radio" name="rk-vista" value="escuela"><span>Salones de la escuela</span></label>
+        </div>
+        <div class="segmentos" role="radiogroup" aria-label="Periodo">
+          <label><input type="radio" name="rk-periodo" value="semana" checked><span>Esta semana</span></label>
+          <label><input type="radio" name="rk-periodo" value="mes"><span>Este mes</span></label>
+          <label><input type="radio" name="rk-periodo" value="total"><span>Siempre</span></label>
+        </div>
+      </div>
+      <div class="panel panel-ancho">
+        <div id="rk-contenido"></div>
+      </div>
+      <details class="panel panel-ancho">
+        <summary>¿Cómo se calculan los puntos?</summary>
+        <ul>
+          <li><b>Puntos</b> = minutos concentrado − 1 por cada distracción.</li>
+          <li>Entre salones se compara el <b>promedio de puntos por estudiante</b>, para que un salón grande no gane solo por tener más alumnos.</li>
+          <li>Solo cuentan sesiones con cuenta iniciada, de <b>10 minutos o más</b>, y máximo <b>8 horas al día</b> por estudiante.</li>
+          <li>No cuentan sesiones con la cámara tapada, con una foto frente a la cámara (no hay parpadeos) o cuya duración no coincide con el reloj del servidor.</li>
+          <li>En el ranking solo aparece el apodo, nunca nombres, correos ni edades.</li>
+        </ul>
+      </details>
+    </section>
+
+    <!-- ===== ADMINISTRADOR: MI ESCUELA ===== -->
+    <section id="pantalla-admin" class="pantalla">
+      <h1>Mi escuela</h1>
+      <p class="sub">Crea tu escuela y sus salones. Comparte el código de cada salón con sus alumnos.</p>
+      <div id="adm-escuelas"></div>
+      <form id="form-escuela" class="panel fila-form">
+        <label class="campo"><span>Nueva escuela</span><input name="nombre" maxlength="120" placeholder="Ej. Tecnológico de ..." required></label>
+        <button class="boton primario" type="submit">Crear escuela</button>
+      </form>
+      <p class="error" data-error hidden></p>
     </section>
   </main>
 
