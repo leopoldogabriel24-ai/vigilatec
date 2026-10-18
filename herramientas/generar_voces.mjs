@@ -18,35 +18,36 @@ const { MENSAJES } = await import(join(RAIZ, "frontend/js/config.js"));
 
 // Voz base del sintetizador y efectos de ffmpeg de cada personaje
 const VOCES = {
-  // Señor oscuro: muy grave, voz encerrada en un casco metálico
+  // Señor oscuro: bajo profundo, lento y pausado, voz "grande" dentro de un casco metálico
   penumbra: {
-    variante: "m4", tono: 18, velocidad: 128,
-    filtro: "rubberband=pitch=0.72,highpass=f=110,lowpass=f=3400,equalizer=f=650:t=q:w=1.2:g=7,"
-      + "aecho=0.8:0.55:5|9:0.35|0.25,chorus=0.6:0.8:30:0.35:0.25:1.5,dynaudnorm=f=150:g=7",
+    variante: "m4", tono: 15, velocidad: 118, palabras: 2,
+    filtro: "rubberband=pitch=0.72:formant=shifted,highpass=f=90,lowpass=f=3200,equalizer=f=600:t=q:w=1.2:g=7,"
+      + "aecho=0.8:0.55:5|9:0.35|0.25,dynaudnorm=f=150:g=7",
   },
-  // Monarca de hierro: grave y metálico, con un ligero zumbido
+  // Monarca de hierro: barítono más alto y nítido, formal, con timbre de máscara de acero
   tirano: {
-    variante: "m3", tono: 28, velocidad: 135,
-    filtro: "rubberband=pitch=0.8,highpass=f=140,lowpass=f=4200,aecho=0.8:0.85:7|12:0.55|0.45,"
-      + "flanger=delay=1.5:depth=2:speed=0.25:regen=20,dynaudnorm=f=150:g=7",
+    variante: "m1", tono: 45, velocidad: 150,
+    filtro: "rubberband=pitch=0.92:formant=preserved,highpass=f=180,lowpass=f=5200,equalizer=f=2400:t=q:w=1:g=6,"
+      + "aecho=0.7:0.85:3|4.5:0.6|0.5,flanger=delay=0.8:depth=1.5:speed=0.6:regen=40,dynaudnorm=f=150:g=7",
   },
-  // Guerrero espartano: ronco, profundo y con fuerza (la aspereza se agrega después del cambio de tono)
+  // Guerrero: grave, rápido y gritado, con mucha distorsión de garganta
   ares: {
-    variante: "m4", tono: 14, velocidad: 138,
-    filtro: "rubberband=pitch=0.78,highpass=f=70,lowpass=f=3600,equalizer=f=180:t=q:w=1:g=6,"
-      + "volume=4,alimiter=limit=0.6,acrusher=bits=10:mix=0.15:mode=log,aecho=0.6:0.3:45:0.18,dynaudnorm=f=150:g=7",
+    variante: "m3", tono: 30, velocidad: 165, amplitud: 160,
+    filtro: "rubberband=pitch=0.8:formant=shifted,highpass=f=80,lowpass=f=4200,equalizer=f=250:t=q:w=1:g=8,"
+      + "volume=8,alimiter=limit=0.45,acrusher=bits=7:mix=0.25:mode=log,aecho=0.6:0.3:60:0.2,dynaudnorm=f=150:g=7",
   },
-  // Justiciero nocturno: muy grave, áspero y casi susurrado
+  // Justiciero nocturno: susurro rasposo con una voz grave por debajo (casi todo aire y aspereza)
   buho: {
-    variante: "m4", tono: 10, velocidad: 128,
-    filtro: "rubberband=pitch=0.74,highpass=f=90,lowpass=f=2800,equalizer=f=130:t=q:w=1:g=6,"
-      + "acrusher=bits=8:mix=0.28:mode=log,volume=2.5,alimiter=limit=0.7,aecho=0.6:0.25:28:0.12,dynaudnorm=f=150:g=7",
+    variante: "whisper", tono: 20, velocidad: 125,
+    capas: ["rubberband=pitch=0.85,highpass=f=300,volume=2.6", "rubberband=pitch=0.6:formant=shifted,volume=0.3,lowpass=f=450"],
+    filtro: "highpass=f=100,lowpass=f=6000,equalizer=f=3500:t=q:w=1:g=5,acrusher=bits=8:mix=0.35:mode=log,aecho=0.5:0.2:20:0.1,dynaudnorm=f=150:g=8",
+    segundaVariante: "m4",
   },
-  // Ojo de fuego: varias voces graves a la vez y eco enorme
+  // Ojo de fuego: gravísimo y muy lento, varias voces y un eco que crece
   ojo: {
-    variante: "m4", tono: 5, velocidad: 112,
-    capas: ["rubberband=pitch=0.55", "rubberband=pitch=0.5,adelay=35", "rubberband=pitch=0.62,adelay=18"],
-    filtro: "lowpass=f=2600,aecho=0.8:0.7:110|230|380:0.42|0.3|0.2,dynaudnorm=f=150:g=9",
+    variante: "m4", tono: 5, velocidad: 100, palabras: 3,
+    capas: ["rubberband=pitch=0.5:formant=shifted", "rubberband=pitch=0.45:formant=shifted,adelay=40", "rubberband=pitch=0.6,adelay=20,volume=0.6"],
+    filtro: "lowpass=f=2200,aecho=0.8:0.75:140|300|520:0.45|0.35|0.25,dynaudnorm=f=150:g=9",
   },
 };
 
@@ -81,15 +82,24 @@ for (const id of ids) {
   const indice = {};
   frasesDe(VIGILANTE_POR_ID[id]).forEach((texto, i) => {
     // 1) Voz base del sintetizador (en minúsculas para que no deletree palabras en MAYÚSCULAS)
-    const wav = meSpeak.speak(texto.toLowerCase(), { rawdata: "buffer", variant: voz.variante, pitch: voz.tono, speed: voz.velocidad });
+    const opciones = { rawdata: "buffer", pitch: voz.tono, speed: voz.velocidad, wordgap: voz.palabras ?? 0, amplitude: voz.amplitud ?? 100 };
     const base = join(temporal, `${id}-${i}.wav`);
-    writeFileSync(base, Buffer.from(wav));
+    writeFileSync(base, Buffer.from(meSpeak.speak(texto.toLowerCase(), { ...opciones, variant: voz.variante })));
+    const entradas = ["-i", base];
+    if (voz.segundaVariante) {
+      // Segunda voz base (por ejemplo, una voz grave debajo de un susurro)
+      const base2 = join(temporal, `${id}-${i}-b.wav`);
+      writeFileSync(base2, Buffer.from(meSpeak.speak(texto.toLowerCase(), { ...opciones, variant: voz.segundaVariante })));
+      entradas.push("-i", base2);
+    }
     // 2) Efectos con ffmpeg y conversión a mp3 ligero
     const archivo = `${String(i).padStart(2, "0")}.mp3`;
+    // Cada capa toma la voz base (o la segunda voz, si existe, para la última capa) y luego se mezclan
+    const fuente = (k) => (voz.segundaVariante && k === voz.capas.length - 1 ? "[1:a]" : "[0:a]");
     const grafo = voz.capas
-      ? `${voz.capas.map((c, k) => `[0:a]${c}[c${k}]`).join(";")};${voz.capas.map((_, k) => `[c${k}]`).join("")}amix=inputs=${voz.capas.length}:normalize=0,${voz.filtro}`
+      ? `${voz.capas.map((c, k) => `${fuente(k)}${c}[c${k}]`).join(";")};${voz.capas.map((_, k) => `[c${k}]`).join("")}amix=inputs=${voz.capas.length}:normalize=0,${voz.filtro}`
       : voz.filtro;
-    execFileSync("ffmpeg", ["-y", "-loglevel", "error", "-i", base, "-filter_complex", grafo,
+    execFileSync("ffmpeg", ["-y", "-loglevel", "error", ...entradas, "-filter_complex", grafo,
       "-ac", "1", "-ar", "24000", "-codec:a", "libmp3lame", "-b:a", "40k", join(salida, archivo)]);
     indice[texto] = archivo;
   });
