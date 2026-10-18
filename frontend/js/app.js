@@ -67,6 +67,7 @@ document.addEventListener("change", (e) => {
   if (name === "severidad") { describirSeveridad(); if (!paquete?.severidad_fija) guardarPreferencias({ severidad: value }); }
   if (e.target.id === "cfg-voz") guardarPreferencias({ voz: checked });
   if (e.target.id === "cfg-microfono") guardarPreferencias({ microfono: checked });
+  if (e.target.id === "cfg-hoja") guardarPreferencias({ hoja: checked });
 });
 
 /** Aplica en la pantalla de configuración lo que el estudiante eligió la última vez. */
@@ -81,6 +82,7 @@ function aplicarPreferencias(p) {
   if (!p.severidad_fija) marcar("severidad", pref.severidad);
   $("cfg-voz").checked = pref.voz;
   $("cfg-microfono").checked = pref.microfono;
+  $("cfg-hoja").checked = pref.hoja;
   $("cfg-tema").value = pref.tema ?? "";
   const min = pref.minutos[p.id];
   if (p.duraciones) { if (min) marcar("duracion", min); }
@@ -191,6 +193,7 @@ async function comenzar() {
   $("config-error").hidden = true;
 
   const detector = new Detector($("video"));
+  detector.modoHoja = $("cfg-hoja").checked;
   try {
     await detector.encenderCamara();
     vigilante.mostrar("Cargando al vigilante…", 0);
@@ -344,7 +347,7 @@ function actualizarIndicadores(obs) {
     $(id).textContent = mal ? malTexto : bien;
   };
   marcar("ind-presente", obs.caras === 0, obs.caras >= 2 ? "Presente (+1)" : "Presente", "Ausente");
-  marcar("ind-mirada", obs.mirada, "Mirada", "Mira a otro lado");
+  marcar("ind-mirada", obs.mirada, obs.leyendo ? "Leyendo 📄" : "Mirada", "Mira a otro lado");
   marcar("ind-movimiento", obs.movimiento, "Quietud", obs.alejado ? "Te alejaste" : "Movimiento");
   marcar("ind-ruido", !!obs.ruido, "Silencio", obs.conversacion ? "Plática" : "Ruido");
 }

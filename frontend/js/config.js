@@ -51,6 +51,13 @@ export const DETECCION = {
   cadaMs: 100,             // analizar la cámara 10 veces por segundo
   parpadeoCerrado: 0.5,    // ojos "cerrados" por encima de este valor (0 a 1)
   parpadeoAbierto: 0.3,    // y "abiertos" otra vez por debajo de este
+  // Estudio con hoja o libro (mirar hacia abajo es normal)
+  cabeceoAbajo: 0.05,      // cuánto debe inclinar la cabeza para considerar que mira hacia abajo
+  ojosAbajo: 0.45,         // ojos mirando hacia abajo (0 a 1)
+  bajadaCara: 0.08,        // la cara bajó en la imagen (fracción de la altura)
+  giroHojaFactor: 1.6,     // leyendo, se tolera más giro de cabeza
+  memoriaAbajoMs: 2500,    // si deja de verse la cara hasta 2.5 s después de mirar abajo, está leyendo
+  toleranciaHoja: 6,       // en ese caso, "no estabas" tarda 6 veces más en contar
   // Micrófono (solo volumen)
   ruidoMargenDb: 15,       // cuántos decibeles más fuerte que lo normal del lugar se considera ruido
   ruidoMinimoDb: -50,      // en un cuarto muy silencioso, no avisar por sonidos muy bajitos

@@ -45,7 +45,11 @@ export class Vigilancia {
 
     // Cambió el tipo de conducta: cerramos la anterior y empezamos otra
     if (this.actual && this.actual.tipo !== tipo) this.cerrar(seg);
-    if (!this.actual) this.actual = { tipo, desde: seg, contada: false, ultimoAviso: 0, nivel: 0 };
+    if (!this.actual) {
+      // Si la cara desapareció justo al mirar la hoja, se da mucho más margen (probablemente está leyendo)
+      const tolerancia = tipo === "ausente" && obs?.haciaAbajo ? DETECCION.toleranciaHoja : 1;
+      this.actual = { tipo, desde: seg, contada: false, ultimoAviso: 0, nivel: 0, tolerancia };
+    }
 
     const a = this.actual;
     const umbral = this.config.umbrales[tipo];
@@ -53,7 +57,7 @@ export class Vigilancia {
     const duracion = seg - a.desde;
 
     // Primera vez que pasa el límite: cuenta como distracción y se avisa
-    if (!a.contada && duracion >= umbral * this.severidad.factor) {
+    if (!a.contada && duracion >= umbral * this.severidad.factor * a.tolerancia) {
       a.contada = true;
       this.conteo[tipo] = (this.conteo[tipo] ?? 0) + 1;
       a.nivel = this.nivelPara(tipo);

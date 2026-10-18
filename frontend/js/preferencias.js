@@ -8,6 +8,7 @@ const PREDETERMINADAS = {
   severidad: "normal",
   voz: true,
   microfono: false,
+  hoja: true,           // estudio con hoja o libro
   minutos: {},          // última duración usada en cada paquete, por ejemplo { estudio: 25 }
 };
 
