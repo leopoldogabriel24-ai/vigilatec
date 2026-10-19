@@ -34,32 +34,38 @@ const VOCES = {
     filtro: "highpass=f=70,lowpass=f=5000,equalizer=f=1200:t=q:w=1:g=3,aecho=0.8:0.5:5|9:0.3|0.2,dynaudnorm=f=150:g=7",
   },
 
-  // Monarca de hierro: barítono formal con timbre de máscara de acero
+  // Monarca de hierro (voz de IA Piper): barítono formal con timbre de máscara de acero
   tirano: {
-    variante: "m3", tono: 52, velocidad: 140,
-    filtro: "highpass=f=150,lowpass=f=5000,equalizer=f=2000:t=q:w=1:g=4,aecho=0.7:0.6:3|4.5:0.4|0.3,"
-      + "flanger=delay=0.8:depth=1:speed=0.5:regen=30,dynaudnorm=f=150:g=7",
+    piper: { lento: 1.05, pausa: 0.3 },
+    filtro: `rubberband=pitch=0.8:formant=preserved:${RB},highpass=f=150,lowpass=f=6500,equalizer=f=2000:t=q:w=1:g=4,treble=g=5:f=2800,`
+      + "aecho=0.7:0.6:3|4.5:0.4|0.3,flanger=delay=0.8:depth=1:speed=0.5:regen=30,dynaudnorm=f=150:g=7",
   },
-  // Guerrero: grave, rápido y áspero, con aire de grito por debajo
+
+  // Guerrero (voz de IA Piper): grave, rápido y áspero, con una capa rasposa de grito
   ares: {
-    variante: "m3", tono: 30, velocidad: 150, segundaVariante: "whisper",
-    capas: ["anull", "highpass=f=1200,volume=0.35"],
-    filtro: "highpass=f=80,lowpass=f=6500,equalizer=f=220:t=q:w=1:g=4,equalizer=f=1900:t=q:w=1:g=6,volume=1.5,"
+    piper: { lento: 0.95, variacion: 0.6, pausa: 0.2 },
+    capas: [`rubberband=pitch=0.75:formant=preserved:${RB}`,
+      `rubberband=pitch=0.75:formant=preserved:${RB},highpass=f=1500,volume=3,asoftclip=type=hard:threshold=0.3,volume=0.12`],
+    filtro: "highpass=f=80,lowpass=f=7500,equalizer=f=220:t=q:w=1:g=4,equalizer=f=1900:t=q:w=1:g=5,treble=g=7:f=2500,volume=1.4,"
       + "asoftclip=type=tanh:threshold=0.8,aecho=0.6:0.25:50:0.12,dynaudnorm=f=150:g=7",
   },
-  // Justiciero nocturno: muy grave, pausado y rasposo (susurro por debajo)
+
+  // Justiciero nocturno (voz de IA Piper): muy grave, pausado y rasposo
   buho: {
-    variante: "m3", tono: 8, velocidad: 118, palabras: 2, segundaVariante: "whisper",
-    capas: ["anull", "highpass=f=1200,volume=0.4"],
-    filtro: "highpass=f=70,lowpass=f=6000,equalizer=f=3000:t=q:w=1:g=4,equalizer=f=150:t=q:w=1:g=2,volume=1.4,"
-      + "asoftclip=type=atan:threshold=0.75,aecho=0.6:0.25:30:0.1,dynaudnorm=f=150:g=7",
+    piper: { lento: 1.15, pausa: 0.45 },
+    capas: [`rubberband=pitch=0.55:formant=preserved:${RB}`,
+      `rubberband=pitch=0.55:formant=preserved:${RB},highpass=f=1200,volume=3,asoftclip=type=hard:threshold=0.25,volume=0.15`],
+    filtro: "highpass=f=70,lowpass=f=7500,equalizer=f=3000:t=q:w=1:g=3,treble=g=7:f=2500,equalizer=f=150:t=q:w=1:g=2,volume=1.3,"
+      + "asoftclip=type=atan:threshold=0.8,aecho=0.6:0.25:30:0.1,dynaudnorm=f=150:g=7",
   },
-  // Supersoldado: grave, calmado y seco, escuchado a través del radio del casco
+
+  // Supersoldado (voz de IA Piper): grave, calmado y seco, escuchado a través del radio del casco
   jefe: {
-    variante: "m3", tono: 12, velocidad: 135,
-    filtro: "highpass=f=200,lowpass=f=4200,equalizer=f=1400:t=q:w=1.2:g=4,volume=1.3,asoftclip=type=tanh:threshold=0.85,"
-      + "aecho=0.5:0.25:8:0.1,dynaudnorm=f=150:g=7",
+    piper: { lento: 1.05, pausa: 0.3 },
+    filtro: `rubberband=pitch=0.58:formant=preserved:${RB},highpass=f=220,lowpass=f=4500,equalizer=f=1400:t=q:w=1.2:g=4,treble=g=6:f=2200,`
+      + "volume=1.3,asoftclip=type=tanh:threshold=0.85,aecho=0.5:0.25:8:0.1,dynaudnorm=f=150:g=7",
   },
+
   // Profesor anciano y gruñón (voz de IA Piper): lento, con un temblor leve
   profesor: {
     piper: { lento: 1.2, pausa: 0.35 },
@@ -74,12 +80,13 @@ const VOCES = {
       + "equalizer=f=250:t=q:w=1:g=2,volume=1.4,asoftclip=type=tanh:threshold=0.8,aecho=0.7:0.25:35:0.1,dynaudnorm=f=120:g=5",
   },
 
-  // Ojo de fuego: gravísimo y lento, con un retumbe una octava abajo y eco amplio
+  // Ojo de fuego (voz de IA Piper): gravísimo y lento, con un retumbe una octava abajo y eco amplio
   ojo: {
-    variante: "m3", tono: 10, velocidad: 100, palabras: 3,
-    capas: ["anull", `rubberband=pitch=0.5:formant=shifted:${RB},lowpass=f=500,volume=0.45`],
-    filtro: "highpass=f=80,lowpass=f=5000,equalizer=f=2500:t=q:w=1:g=3,aecho=0.8:0.35:260:0.1,dynaudnorm=f=150:g=7",
+    piper: { lento: 1.35, pausa: 0.5 },
+    capas: [`rubberband=pitch=0.7:formant=preserved:${RB}`, `rubberband=pitch=0.45:formant=shifted:${RB},lowpass=f=500,volume=0.45`],
+    filtro: "highpass=f=70,lowpass=f=5000,equalizer=f=2500:t=q:w=1:g=3,aecho=0.8:0.35:260:0.1,dynaudnorm=f=150:g=7",
   },
+
 };
 
 /** Todas las frases que puede decir un personaje (avisos con su estilo + frases propias). */

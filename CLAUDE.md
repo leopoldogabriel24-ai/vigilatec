@@ -17,8 +17,8 @@ Render publica solo lo que está en la rama `main` de GitHub (leopoldogabriel24-
 - Comentarios del código en español, cortos.
 - Colores: azul del logo (#045491) y blanco, con un toque leve de amarillo TecNM (#f5b800); tipografía Montserrat.
   La portada lleva el escudo del TecNM (`frontend/img/escudo-tecnm.svg`, trazado de la referencia del dueño).
-- Voces grabadas: `herramientas/generar_voces.mjs`. Penumbra, Profesor y Sargento usan la voz de IA gratuita Piper
-  (es_MX-ald-medium; se descarga de GitHub: k2-fsa/sherpa-onnx, release "tts-models"); los demás usan meSpeak.
+- Voces grabadas: `herramientas/generar_voces.mjs`. Todos los vigilantes con voz grabada usan la voz de IA gratuita Piper
+  (es_MX-ald-medium; se descarga de GitHub: k2-fsa/sherpa-onnx, release "tts-models") más efectos de ffmpeg.
 - Maestro Musgo y Exo-Guardián usan la forma anterior de elegir voz (`vozAnterior: true`); el dueño la prefiere.
 - La app debe seguir funcionando SIN cuenta (las cuentas son opcionales, solo necesarias para el ranking).
 - En el ranking solo se muestra el apodo; nunca correos, nombres reales ni edades.
