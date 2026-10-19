@@ -54,7 +54,7 @@ vigilatec/
 - Modo "Estudio con hoja o libro" (mirar hacia abajo no cuenta como distracción): valores `cabeceoAbajo`, `ojosAbajo`,
   `bajadaCara` y `toleranciaHoja` en `frontend/js/config.js`.
 - Brillos y sombras de los dibujos: degradados `g-...` al inicio de `frontend/index.html`. El amarillo TecNM es leve (`--amarillo`).
-- Voces grabadas con efectos (Penumbra, Tirano, Ares, Vigilante Nocturno, Ojo): `frontend/audio/voces/`.
+- Voces grabadas con efectos (Profesor, Sargento, Penumbra, Tirano, Ares, Vigilante Nocturno, Ojo, Jefe): `frontend/audio/voces/`.
   Si cambias sus frases, regéneralas con `herramientas/generar_voces.mjs` (instrucciones dentro del archivo).
 - Vigilantes premium: hoy son un PROTOTIPO inspirado en personajes famosos; antes de publicarlos en serio o venderlos
   hay que cambiarlos por diseños originales o licenciados. Para volverlos de pago:

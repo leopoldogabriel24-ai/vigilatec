@@ -60,6 +60,25 @@ const VOCES = {
       + "aecho=0.5:0.25:8:0.12,deesser,dynaudnorm=f=150:g=7",
     segundaVariante: "whisper",
   },
+  // Profesor anciano y gruñón: lento, voz temblorosa (vibrato y trémolo), con aire y un poco ronca
+  profesor: {
+    variante: "m3", tono: 42, velocidad: 118, palabras: 1,
+    capas: ["rubberband=pitch=0.97:formant=preserved,vibrato=f=6.5:d=0.12,aformat=sample_fmts=s16,tremolo=f=5:d=0.25",
+      "rubberband=pitch=0.97,highpass=f=900,volume=0.55"],
+    filtro: "highpass=f=130,lowpass=f=4200,equalizer=f=1100:t=q:w=1:g=4,equalizer=f=250:t=q:w=1:g=-3,volume=1.8,"
+      + "asoftclip=type=atan:threshold=0.6,aecho=0.6:0.3:22:0.12,deesser,dynaudnorm=f=150:g=7",
+    segundaVariante: "whisper",
+  },
+  // Sargento instructor: rápido, fuerte y gritado, con pecho, aspereza y eco de cuartel
+  sargento: {
+    variante: "klatt2", tono: 48, velocidad: 172, amplitud: 170,
+    capas: ["rubberband=pitch=0.9:formant=shifted",
+      "rubberband=pitch=0.9:formant=shifted,adelay=6,volume=0.3",
+      "rubberband=pitch=0.92,highpass=f=1200,volume=0.3"],
+    filtro: "highpass=f=100,lowpass=f=4800,equalizer=f=260:t=q:w=1:g=3,equalizer=f=1900:t=q:w=1.2:g=5,volume=1.5,"
+      + "asoftclip=type=tanh:threshold=0.75,aecho=0.7:0.3:40:0.15,deesser,dynaudnorm=f=120:g=5",
+    segundaVariante: "whisper",
+  },
   // Ojo de fuego: gravísimo y muy lento, varias voces y un eco que crece
   ojo: {
     variante: "m4", tono: 5, velocidad: 100, palabras: 3,

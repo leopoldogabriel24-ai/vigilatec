@@ -34,16 +34,54 @@ export const VIGILANTES = [
   },
   {
     id: "profesor",
+    vozGrabada: true,   // usa audio/voces/profesor (herramientas/generar_voces.mjs)
     nombre: "Profesor serio",
-    descripcion: "Formal y exigente, como en el aula.",
-    voz: { tono: 0.8, velocidad: 0.95, genero: "m" },
+    descripcion: "Anciano gruñón de la vieja escuela. Todo le molesta.",
+    voz: { tono: 0.8, velocidad: 0.85, genero: "m" },
     frases: {
-      calma: "Sigue trabajando. Te estoy observando.",
-      animo: ["Buen ritmo de trabajo. Continúa.", "Así se estudia. Sigue."],
-      inicioExamen: "Pueden comenzar. Tienen el tiempo indicado.",
-      inicioEstudio: "Empecemos. Aprovecha bien el tiempo.",
+      calma: "Mmm. Siga trabajando, que lo estoy viendo.",
+      animo: ["Hmph. Nada mal… para ser de esta generación.", "Bueno, bueno. Eso ya parece estudio."],
+      inicioExamen: "Guarden todo. Pueden comenzar… y en silencio, ¿eh?",
+      inicioEstudio: "A ver, a ver. Empecemos de una vez, que el tiempo no regresa.",
     },
-    decorar: (texto, nivel) => (nivel === 2 ? "Atención: " : nivel === 3 ? "Por última vez: " : "") + texto,
+    decorar: (texto) => texto,
+    mensajes: {
+      ausente: {
+        1: ["¿Y ahora a dónde se fue? Regrese a su lugar.", "Hmph. ¿Quién le dio permiso de pararse?"],
+        2: ["¡Siéntese, jovencito! En mis tiempos nadie se levantaba en clase.", "¡Ay, esta juventud! Regrese a su asiento."],
+        3: ["¡Ya me cansé! Si no regresa, le pongo cero, ¿me oyó?"],
+      },
+      mirada: {
+        1: ["¿Qué tanto mira? La vista en su hoja.", "Mmm. Los ojos en el papel, no en las musarañas."],
+        2: ["¡Otra vez volteando! ¿Ahí está la respuesta o qué?", "¡La vista al frente, caramba! Eso no es estudiar."],
+        3: ["¡Última vez que se lo digo! La vista en su hoja o se sale."],
+      },
+      movimiento: {
+        1: ["Deje de moverse tanto, me marea.", "Siéntese derechito, como la gente."],
+        2: ["¡Pues qué tiene! ¿Hormigas en la silla?", "¡Quieto! Así no se puede concentrar nadie."],
+        3: ["¡Basta! Siéntese y no se mueva, por favor, que ya estoy viejo."],
+      },
+      pestana: {
+        1: ["¿A dónde se fue? Regrese a su trabajo."],
+        2: ["Nada de andar cambiando ventanas, ¿eh?"],
+        3: ["¡En mi examen eso es copiar! Cero directo."],
+      },
+      otra_persona: {
+        1: ["¿Y ese quién es? El examen es individual."],
+        2: ["Hmph. Aquí cada quien hace su trabajo."],
+        3: ["¡Que se retire su acompañante ahora mismo!"],
+      },
+      ruido: {
+        1: ["¿Qué es ese escándalo? Así no se puede."],
+        2: ["¡Cuánto ruido! Busque un lugar decente."],
+        3: ["¡Silencio! ¡Parece mercado!"],
+      },
+      conversacion: {
+        1: ["¿Quién está platicando? A trabajar."],
+        2: ["¡Nada de chismes en mi clase!"],
+        3: ["¡Silencio! En un examen no se habla, ¡caramba!"],
+      },
+    },
     svg: `${HALO}${HOMBROS}
       <path class="blanco" d="M88 154 L100 172 L112 154 Z"/><path class="relleno-oscuro" d="M97 160 L103 160 L105 182 L100 186 L95 182 Z"/>
       <circle class="piel" cx="53" cy="106" r="9"/><circle class="piel" cx="147" cy="106" r="9"/>
@@ -111,16 +149,54 @@ export const VIGILANTES = [
   },
   {
     id: "sargento",
+    vozGrabada: true,   // usa audio/voces/sargento (herramientas/generar_voces.mjs)
     nombre: "Sargento estricto",
-    descripcion: "Disciplina militar. No perdona nada.",
-    voz: { tono: 0.7, velocidad: 1.1, genero: "m" },
+    descripcion: "Instructor militar gritón. ¡No perdona nada, recluta!",
+    voz: { tono: 0.6, velocidad: 1.2, genero: "m" },
     frases: {
-      calma: "Ojos al frente. Te estoy vigilando.",
-      animo: ["¡Así se hace, recluta!", "Disciplina impecable. ¡Sigue!"],
-      inicioExamen: "¡Atención! El examen comienza. ¡Nada de distracciones!",
-      inicioEstudio: "¡A estudiar, recluta! ¡Sin excusas!",
+      calma: "¡Ojos al frente, recluta! ¡Te estoy vigilando!",
+      animo: ["¡Así me gusta, recluta! ¡Sigue así!", "¡Eso es disciplina! ¡No aflojes!", "¡Hoy no me das vergüenza, recluta! ¡Continúa!"],
+      inicioExamen: "¡Atención! ¡El examen comienza ya! ¡¿Entendido?! ¡Sí, mi sargento!",
+      inicioEstudio: "¡Arriba, recluta! ¡Aquí se estudia hasta que yo lo diga! ¡¿Quedó claro?!",
     },
-    decorar: (texto, nivel) => (nivel >= 3 ? "¡Recluta! " : "") + (nivel >= 2 ? texto.toUpperCase() : texto),
+    decorar: (texto) => texto,
+    mensajes: {
+      ausente: {
+        1: ["¡¿A dónde crees que vas, recluta?! ¡Regresa a tu puesto!", "¡¿Quién te dio permiso de moverte?! ¡A tu lugar!"],
+        2: ["¡No te oigo! ¡Regresa a tu silla ahora mismo, recluta!", "¡¿Te vas a rendir?! ¡Aquí nadie se rinde!"],
+        3: ["¡Regresa ya, gusano! ¡En mi pelotón nadie abandona su puesto!"],
+      },
+      mirada: {
+        1: ["¡¿Qué estás mirando, recluta?! ¡Ojos al frente!", "¡Ojos en la hoja! ¡Ahí está tu misión!"],
+        2: ["¡¿Te gusta lo que ves allá?! ¡Ojos al frente, recluta!", "¡No voltees! ¡¿Quedó claro?! ¡Sí, mi sargento!"],
+        3: ["¡Última advertencia, gusano! ¡La vista en tu hoja o haces lagartijas!"],
+      },
+      movimiento: {
+        1: ["¡Quieto, recluta! ¡Firmes!", "¡Deja de bailar! ¡Esto no es una fiesta!"],
+        2: ["¡Quieto como una estatua, recluta! ¡¿Me oíste?!", "¡¿Tienes hormigas en el uniforme?! ¡Firmes!"],
+        3: ["¡Firmes, gusano! ¡Si te mueves otra vez, cien lagartijas!"],
+      },
+      pestana: {
+        1: ["¡Abandonaste tu puesto! ¡Regresa a la página!"],
+        2: ["¡Nada de cambiar de ventana, recluta!"],
+        3: ["¡En combate, eso es deserción! ¡Regresa ya!"],
+      },
+      otra_persona: {
+        1: ["¡¿Quién es tu amigo, recluta?! ¡Esta misión es individual!"],
+        2: ["¡Aquí nadie te ayuda! ¡Pide que se retire!"],
+        3: ["¡Fuera de mi zona! ¡Que se retire ahora mismo!"],
+      },
+      ruido: {
+        1: ["¡¿Qué es ese escándalo?! ¡Silencio en las filas!"],
+        2: ["¡Demasiado ruido, recluta! ¡Busca otro lugar!"],
+        3: ["¡Silencio! ¡Esto es un cuartel, no un mercado!"],
+      },
+      conversacion: {
+        1: ["¡¿Estás platicando, recluta?! ¡Silencio!"],
+        2: ["¡Aquí solo hablo yo! ¡¿Entendido?!"],
+        3: ["¡Cierra la boca y estudia! ¡Sí, mi sargento!"],
+      },
+    },
     svg: `${HALO}${HOMBROS}
       <circle class="piel" cx="53" cy="110" r="9"/><circle class="piel" cx="147" cy="110" r="9"/>
       <circle class="piel" cx="100" cy="108" r="46"/>
