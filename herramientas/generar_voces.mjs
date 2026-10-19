@@ -18,73 +18,63 @@ const { VIGILANTE_POR_ID } = await import(join(RAIZ, "frontend/js/vigilantes.js"
 const { MENSAJES } = await import(join(RAIZ, "frontend/js/config.js"));
 
 // Voz base del sintetizador y efectos de ffmpeg de cada personaje
+// Calidad del cambio de tono (más suave y entendible)
+const RB = "pitchq=quality:transients=smooth:phase=independent";
 const VOCES = {
-  // Nota: tras "vibrato" siempre va "aformat=sample_fmts=s16" (sin eso, ffmpeg puede dejar la voz en silencio)
-  // Señor oscuro: bajo profundo, lento y pausado, voz "grande" dentro de un casco metálico
+  // Notas: tras "vibrato" siempre va "aformat=sample_fmts=s16" (sin eso, ffmpeg puede dejar la voz en silencio).
+  // Para que se entiendan las palabras: voz base "m3"/"m4" (las "klatt" se entienden peor), poco cambio de tono
+  // en la voz principal y lo grave como una capa aparte por debajo. Rasgos guiados por audios de referencia del dueño.
+  // Señor oscuro: grave y pausado, con un retumbe de casco debajo y eco metálico corto
   penumbra: {
-    variante: "m4", tono: 15, velocidad: 118, palabras: 2,
-    filtro: "rubberband=pitch=0.72:formant=shifted,highpass=f=90,lowpass=f=3200,equalizer=f=600:t=q:w=1.2:g=7,"
-      + "aecho=0.8:0.55:5|9:0.35|0.25,dynaudnorm=f=150:g=7",
+    variante: "m3", tono: 28, velocidad: 110, palabras: 2,
+    capas: ["anull", `rubberband=pitch=0.6:formant=shifted:${RB},lowpass=f=700,volume=0.4`],
+    filtro: "highpass=f=80,lowpass=f=5000,equalizer=f=1200:t=q:w=1:g=4,equalizer=f=2800:t=q:w=1:g=3,"
+      + "aecho=0.8:0.5:5|9:0.3|0.2,dynaudnorm=f=150:g=7",
   },
-  // Monarca de hierro: barítono más alto y nítido, formal, con timbre de máscara de acero
+  // Monarca de hierro: barítono formal con timbre de máscara de acero
   tirano: {
-    variante: "m1", tono: 45, velocidad: 150,
-    filtro: "rubberband=pitch=0.92:formant=preserved,highpass=f=180,lowpass=f=5200,equalizer=f=2400:t=q:w=1:g=6,"
-      + "aecho=0.7:0.85:3|4.5:0.6|0.5,flanger=delay=0.8:depth=1.5:speed=0.6:regen=40,dynaudnorm=f=150:g=7",
+    variante: "m3", tono: 52, velocidad: 140,
+    filtro: "highpass=f=150,lowpass=f=5000,equalizer=f=2000:t=q:w=1:g=4,aecho=0.7:0.6:3|4.5:0.4|0.3,"
+      + "flanger=delay=0.8:depth=1:speed=0.5:regen=30,dynaudnorm=f=150:g=7",
   },
-  // Guerrero: grave, rápido y gritado. Voz base "Klatt", temblor leve, saturación cálida
-  // y una capa de respiración (voz susurrada) debajo para que suene menos a zumbido de máquina
+  // Guerrero: grave, rápido y áspero, con aire de grito por debajo
   ares: {
-    variante: "klatt2", tono: 32, velocidad: 158, amplitud: 150,
-    capas: ["rubberband=pitch=0.82:formant=shifted,vibrato=f=5.5:d=0.05,aformat=sample_fmts=s16",
-      "rubberband=pitch=0.81:formant=shifted,adelay=12,volume=0.45",
-      "rubberband=pitch=0.85,highpass=f=400,volume=0.9"],
-    filtro: "highpass=f=80,lowpass=f=3400,equalizer=f=250:t=q:w=1:g=6,equalizer=f=1500:t=q:w=1:g=2,"
-      + "volume=2.5,asoftclip=type=tanh:threshold=0.55,aecho=0.6:0.3:60:0.18,deesser,dynaudnorm=f=150:g=7",
-    segundaVariante: "whisper",
+    variante: "m3", tono: 30, velocidad: 150, segundaVariante: "whisper",
+    capas: ["anull", "highpass=f=1200,volume=0.35"],
+    filtro: "highpass=f=80,lowpass=f=6500,equalizer=f=220:t=q:w=1:g=4,equalizer=f=1900:t=q:w=1:g=6,volume=1.5,"
+      + "asoftclip=type=tanh:threshold=0.8,aecho=0.6:0.25:50:0.12,dynaudnorm=f=150:g=7",
   },
-  // Justiciero nocturno: susurro rasposo y voz grave "Klatt" debajo, con mucho aire y aspereza cálida
+  // Justiciero nocturno: muy grave, pausado y rasposo (susurro por debajo)
   buho: {
-    variante: "whisper", tono: 20, velocidad: 122,
-    capas: ["rubberband=pitch=0.85,highpass=f=300,volume=2.2",
-      "rubberband=pitch=0.62:formant=shifted,vibrato=f=4.5:d=0.04,aformat=sample_fmts=s16,volume=0.6,lowpass=f=1100"],
-    filtro: "highpass=f=90,lowpass=f=5000,equalizer=f=3000:t=q:w=1:g=3,volume=2,asoftclip=type=atan:threshold=0.45,"
-      + "aecho=0.6:0.3:35:0.15,deesser,dynaudnorm=f=150:g=8",
-    segundaVariante: "klatt2",
+    variante: "m3", tono: 8, velocidad: 118, palabras: 2, segundaVariante: "whisper",
+    capas: ["anull", "highpass=f=1200,volume=0.4"],
+    filtro: "highpass=f=70,lowpass=f=6000,equalizer=f=3000:t=q:w=1:g=4,equalizer=f=150:t=q:w=1:g=2,volume=1.4,"
+      + "asoftclip=type=atan:threshold=0.75,aecho=0.6:0.25:30:0.1,dynaudnorm=f=150:g=7",
   },
   // Supersoldado: grave, calmado y seco, escuchado a través del radio del casco
   jefe: {
-    variante: "klatt2", tono: 26, velocidad: 138,
-    capas: ["rubberband=pitch=0.84:formant=shifted", "rubberband=pitch=0.86,highpass=f=500,volume=0.5"],
-    filtro: "highpass=f=320,lowpass=f=3300,equalizer=f=1400:t=q:w=1.2:g=5,volume=2,asoftclip=type=tanh:threshold=0.6,"
-      + "aecho=0.5:0.25:8:0.12,deesser,dynaudnorm=f=150:g=7",
-    segundaVariante: "whisper",
+    variante: "m3", tono: 12, velocidad: 135,
+    filtro: "highpass=f=200,lowpass=f=4200,equalizer=f=1400:t=q:w=1.2:g=4,volume=1.3,asoftclip=type=tanh:threshold=0.85,"
+      + "aecho=0.5:0.25:8:0.1,dynaudnorm=f=150:g=7",
   },
-  // Profesor anciano y gruñón: lento, voz temblorosa (vibrato y trémolo), con aire y un poco ronca
+  // Profesor anciano y gruñón: lento, con un temblor leve y algo de aire
   profesor: {
-    variante: "m3", tono: 42, velocidad: 118, palabras: 1,
-    capas: ["rubberband=pitch=0.97:formant=preserved,vibrato=f=6.5:d=0.12,aformat=sample_fmts=s16,tremolo=f=5:d=0.25",
-      "rubberband=pitch=0.97,highpass=f=900,volume=0.55"],
-    filtro: "highpass=f=130,lowpass=f=4200,equalizer=f=1100:t=q:w=1:g=4,equalizer=f=250:t=q:w=1:g=-3,volume=1.8,"
-      + "asoftclip=type=atan:threshold=0.6,aecho=0.6:0.3:22:0.12,deesser,dynaudnorm=f=150:g=7",
-    segundaVariante: "whisper",
+    variante: "m3", tono: 42, velocidad: 118, palabras: 1, segundaVariante: "whisper",
+    capas: ["vibrato=f=6:d=0.05,aformat=sample_fmts=s16,tremolo=f=5:d=0.1", "highpass=f=1500,volume=0.25"],
+    filtro: "highpass=f=120,lowpass=f=5500,equalizer=f=2500:t=q:w=1:g=3,equalizer=f=250:t=q:w=1:g=-2,dynaudnorm=f=150:g=7",
   },
-  // Sargento instructor: rápido, fuerte y gritado, con pecho, aspereza y eco de cuartel
+  // Sargento instructor: rápido, fuerte y gritado, con aspereza y eco de cuartel
   sargento: {
-    variante: "klatt2", tono: 48, velocidad: 172, amplitud: 170,
-    capas: ["rubberband=pitch=0.9:formant=shifted",
-      "rubberband=pitch=0.9:formant=shifted,adelay=6,volume=0.3",
-      "rubberband=pitch=0.92,highpass=f=1200,volume=0.3"],
-    filtro: "highpass=f=100,lowpass=f=4800,equalizer=f=260:t=q:w=1:g=3,equalizer=f=1900:t=q:w=1.2:g=5,volume=1.5,"
-      + "asoftclip=type=tanh:threshold=0.75,aecho=0.7:0.3:40:0.15,deesser,dynaudnorm=f=120:g=5",
-    segundaVariante: "whisper",
+    variante: "m4", tono: 40, velocidad: 160, segundaVariante: "whisper",
+    capas: ["anull", "highpass=f=1500,volume=0.2"],
+    filtro: "highpass=f=110,lowpass=f=6000,equalizer=f=2000:t=q:w=1:g=4,equalizer=f=250:t=q:w=1:g=2,volume=1.4,"
+      + "asoftclip=type=tanh:threshold=0.85,aecho=0.7:0.25:35:0.1,dynaudnorm=f=120:g=5",
   },
-  // Ojo de fuego: gravísimo y muy lento, varias voces y un eco que crece
+  // Ojo de fuego: gravísimo y lento, con un retumbe una octava abajo y eco amplio
   ojo: {
-    variante: "m4", tono: 5, velocidad: 100, palabras: 3,
-    // Una capa menos grave para que se oiga en bocinas pequeñas (laptop y celular)
-    capas: ["rubberband=pitch=0.5:formant=shifted", "rubberband=pitch=0.45:formant=shifted,adelay=40", "rubberband=pitch=0.72,adelay=20,volume=1.4"],
-    filtro: "highpass=f=110,lowpass=f=3200,equalizer=f=1200:t=q:w=1:g=7,aecho=0.8:0.75:140|300|520:0.45|0.35|0.25,dynaudnorm=f=150:g=9",
+    variante: "m3", tono: 10, velocidad: 100, palabras: 3,
+    capas: ["anull", `rubberband=pitch=0.5:formant=shifted:${RB},lowpass=f=500,volume=0.45`],
+    filtro: "highpass=f=80,lowpass=f=5000,equalizer=f=2500:t=q:w=1:g=3,aecho=0.8:0.35:260:0.1,dynaudnorm=f=150:g=7",
   },
 };
 
