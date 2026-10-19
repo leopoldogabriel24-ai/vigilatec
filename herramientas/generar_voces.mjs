@@ -3,8 +3,11 @@
 //
 // Requisitos: Node 18+, ffmpeg (con rubberband y libmp3lame) y el paquete "mespeak" descomprimido:
 //   npm pack mespeak@2.0.2 && tar xzf mespeak-2.0.2.tgz   (crea la carpeta "package")
+// Los personajes con "piper" usan una voz de IA gratuita (Piper, voz es_MX-ald-medium, licencia libre):
+//   pip install piper-tts   y descargar es_MX-ald-medium.onnx (+ .onnx.json)
 // Uso:
-//   MESPEAK_DIR=/ruta/a/package node herramientas/generar_voces.mjs [id ...]
+//   MESPEAK_DIR=/ruta/a/package PIPER=/ruta/a/piper PIPER_MODELO=/ruta/es_MX-ald-medium.onnx \
+//     node herramientas/generar_voces.mjs [id ...]
 import { execFileSync, spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from "node:fs";
@@ -24,13 +27,13 @@ const VOCES = {
   // Notas: tras "vibrato" siempre va "aformat=sample_fmts=s16" (sin eso, ffmpeg puede dejar la voz en silencio).
   // Para que se entiendan las palabras: voz base "m3"/"m4" (las "klatt" se entienden peor), poco cambio de tono
   // en la voz principal y lo grave como una capa aparte por debajo. Rasgos guiados por audios de referencia del dueño.
-  // Señor oscuro: grave y pausado, con un retumbe de casco debajo y eco metálico corto
+  // Señor oscuro (voz de IA Piper): grave y pausado, con un retumbe de casco debajo y eco metálico corto
   penumbra: {
-    variante: "m3", tono: 28, velocidad: 110, palabras: 2,
-    capas: ["anull", `rubberband=pitch=0.6:formant=shifted:${RB},lowpass=f=700,volume=0.4`],
-    filtro: "highpass=f=80,lowpass=f=5000,equalizer=f=1200:t=q:w=1:g=4,equalizer=f=2800:t=q:w=1:g=3,"
-      + "aecho=0.8:0.5:5|9:0.3|0.2,dynaudnorm=f=150:g=7",
+    piper: { lento: 1.25, variacion: 0.5, pausa: 0.4 },
+    capas: [`rubberband=pitch=0.72:formant=preserved:${RB}`, `rubberband=pitch=0.5:formant=shifted:${RB},lowpass=f=600,volume=0.35`],
+    filtro: "highpass=f=70,lowpass=f=5000,equalizer=f=1200:t=q:w=1:g=3,aecho=0.8:0.5:5|9:0.3|0.2,dynaudnorm=f=150:g=7",
   },
+
   // Monarca de hierro: barítono formal con timbre de máscara de acero
   tirano: {
     variante: "m3", tono: 52, velocidad: 140,
@@ -57,19 +60,20 @@ const VOCES = {
     filtro: "highpass=f=200,lowpass=f=4200,equalizer=f=1400:t=q:w=1.2:g=4,volume=1.3,asoftclip=type=tanh:threshold=0.85,"
       + "aecho=0.5:0.25:8:0.1,dynaudnorm=f=150:g=7",
   },
-  // Profesor anciano y gruñón: lento, con un temblor leve y algo de aire
+  // Profesor anciano y gruñón (voz de IA Piper): lento, con un temblor leve
   profesor: {
-    variante: "m3", tono: 42, velocidad: 118, palabras: 1, segundaVariante: "whisper",
-    capas: ["vibrato=f=6:d=0.05,aformat=sample_fmts=s16,tremolo=f=5:d=0.1", "highpass=f=1500,volume=0.25"],
-    filtro: "highpass=f=120,lowpass=f=5500,equalizer=f=2500:t=q:w=1:g=3,equalizer=f=250:t=q:w=1:g=-2,dynaudnorm=f=150:g=7",
+    piper: { lento: 1.2, variacion: 0.7, pausa: 0.35 },
+    filtro: "vibrato=f=6:d=0.06,aformat=sample_fmts=s16,tremolo=f=5:d=0.1,highpass=f=120,lowpass=f=6000,"
+      + "equalizer=f=2500:t=q:w=1:g=2,dynaudnorm=f=150:g=7",
   },
-  // Sargento instructor: rápido, fuerte y gritado, con aspereza y eco de cuartel
+
+  // Sargento instructor (voz de IA Piper): rápido, fuerte y gritado, con aspereza y eco de cuartel
   sargento: {
-    variante: "m4", tono: 40, velocidad: 160, segundaVariante: "whisper",
-    capas: ["anull", "highpass=f=1500,volume=0.2"],
-    filtro: "highpass=f=110,lowpass=f=6000,equalizer=f=2000:t=q:w=1:g=4,equalizer=f=250:t=q:w=1:g=2,volume=1.4,"
-      + "asoftclip=type=tanh:threshold=0.85,aecho=0.7:0.25:35:0.1,dynaudnorm=f=120:g=5",
+    piper: { lento: 0.85, variacion: 0.8, pausa: 0.15 },
+    filtro: `rubberband=pitch=0.9:formant=preserved:${RB},highpass=f=110,lowpass=f=6500,equalizer=f=2000:t=q:w=1:g=4,`
+      + "equalizer=f=250:t=q:w=1:g=2,volume=1.4,asoftclip=type=tanh:threshold=0.8,aecho=0.7:0.25:35:0.1,dynaudnorm=f=120:g=5",
   },
+
   // Ojo de fuego: gravísimo y lento, con un retumbe una octava abajo y eco amplio
   ojo: {
     variante: "m3", tono: 10, velocidad: 100, palabras: 3,
@@ -111,7 +115,15 @@ for (const id of ids) {
     // 1) Voz base del sintetizador (en minúsculas para que no deletree palabras en MAYÚSCULAS)
     const opciones = { rawdata: "buffer", pitch: voz.tono, speed: voz.velocidad, wordgap: voz.palabras ?? 0, amplitude: voz.amplitud ?? 100 };
     const base = join(temporal, `${id}-${i}.wav`);
-    writeFileSync(base, Buffer.from(meSpeak.speak(texto.toLowerCase(), { ...opciones, variant: voz.variante })));
+    if (voz.piper) {
+      // Voz de IA (Piper): "lento" alarga los sonidos, "variacion" da más o menos expresión
+      const r = spawnSync(process.env.PIPER ?? "piper", ["-m", process.env.PIPER_MODELO, "-f", base,
+        "--length-scale", String(voz.piper.lento ?? 1), "--noise-scale", String(voz.piper.variacion ?? 0.667),
+        "--sentence-silence", String(voz.piper.pausa ?? 0.2)], { input: texto.toLowerCase(), encoding: "utf8" });
+      if (r.status !== 0) throw new Error(`Piper falló en "${texto}": ${r.stderr}`);
+    } else {
+      writeFileSync(base, Buffer.from(meSpeak.speak(texto.toLowerCase(), { ...opciones, variant: voz.variante })));
+    }
     const entradas = ["-i", base];
     if (voz.segundaVariante) {
       // Segunda voz base (por ejemplo, una voz grave debajo de un susurro)
