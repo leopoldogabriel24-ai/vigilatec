@@ -28,7 +28,7 @@ vigilatec/
 │   │   ├── config.js        Sensibilidad, tiempos y mensajes del vigilante
 │   │   ├── detector.js      Cámara + MediaPipe (detección de cara)
 │   │   ├── microfono.js     Micrófono opcional: solo mide volumen, nunca graba
-│   │   ├── vigilantes.js    Los personajes (clásicos, León Azul y premium): dibujo, voz y forma de hablar
+│   │   ├── vigilantes.js    Los personajes (clásicos y premium): dibujo, voz y forma de hablar
 │   │   ├── preferencias.js  Recuerda las elecciones del estudiante en su navegador
 │   │   ├── cuentas.js       Registro (privacidad y consentimiento), entrar y "Mi cuenta"
 │   │   ├── ranking.js       Ranking del salón y entre salones

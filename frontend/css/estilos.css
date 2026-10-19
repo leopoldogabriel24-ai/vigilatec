@@ -480,17 +480,6 @@ main { flex: 1; width: 100%; max-width: 1100px; margin: 0 auto; padding: 2rem 16
 @media (prefers-reduced-motion: reduce) {
   .vigilante .pupila, #vigilante, .vigilante.hablando .boca, .vigilante .pupilas, .vigilante .fuego, .vigilante .fuego-claro { animation: none !important; }
 }
-/* León Azul (mascota original) */
-.vigilante .melena path { fill: url(#g-azul); stroke: #023a66; stroke-width: 2; stroke-linejoin: round; }
-.vigilante .oreja-leon { fill: #f2dcb0; stroke: #c9a46a; stroke-width: 2; }
-.vigilante .oreja-interior-leon { fill: #e8a6a0; }
-.vigilante .cara-leon { fill: #f6e3bd; stroke: #d4b27a; stroke-width: 2; }
-.vigilante .hocico { fill: #fff8ea; }
-.vigilante .nariz-leon { fill: #3a2a20; }
-.vigilante .bigote-leon { fill: none; stroke: #8a6a4a; stroke-width: 1.6; stroke-linecap: round; }
-.vigilante .dorado-tec { fill: url(#g-dorado-tec); }
-.vigilante.ap-leon .ceja, .vigilante.ap-leon .boca { stroke: #5a3d2a; }
-.vigilante.nivel-3 .melena path { fill: #c62828; stroke: #7f0000; }
 
 /* ===== Rediseño visual: amarillo TecNM leve, portada, galería, confeti ===== */
 :root { --amarillo: #f5b800; --amarillo-claro: #ffe27a; --amarillo-fondo: #fff8dc; }
@@ -532,11 +521,11 @@ body { overflow-x: hidden; }
 .portada-texto p { font-size: 1.08rem; max-width: 520px; opacity: .95; margin: 0 0 1.5rem; }
 .portada-botones { display: flex; flex-wrap: wrap; gap: .8rem; }
 .portada-texto .portada-sello { font-size: .85rem; margin: 1.2rem 0 0; opacity: .85; }
-.portada-mascota { position: relative; display: grid; place-items: center; }
-.portada-mascota::before { content: ""; position: absolute; width: 85%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle, rgba(255, 226, 122, .45), transparent 65%); animation: latir 3.5s ease-in-out infinite; }
-#mascota { width: min(330px, 70vw); height: auto; cursor: pointer; animation: flotar 4.5s ease-in-out infinite; filter: drop-shadow(0 18px 24px rgba(0, 0, 0, .3)); }
-.globo-mascota { position: absolute; top: 2%; right: 0; background: var(--blanco); color: var(--azul); font-weight: 700; font-size: .85rem; padding: .45rem .8rem; border-radius: 14px 14px 14px 2px; box-shadow: 0 6px 16px rgba(0, 0, 0, .2); border: 2px solid var(--amarillo); max-width: 170px; }
-@keyframes latir { 50% { transform: scale(1.08); opacity: .75; } }
+.portada-escudo { position: relative; display: flex; flex-direction: column; align-items: center; gap: .8rem; }
+.portada-escudo::before { content: ""; position: absolute; top: 40%; left: 50%; width: 120%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; background: radial-gradient(circle, rgba(255, 226, 122, .3), transparent 62%); animation: latir 4s ease-in-out infinite; }
+.portada-escudo img { position: relative; width: min(240px, 60vw); height: auto; filter: drop-shadow(0 14px 22px rgba(0, 0, 0, .3)); }
+.portada-escudo span { position: relative; text-align: center; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; font-size: 1rem; line-height: 1.3; padding-top: .6rem; border-top: 3px solid var(--amarillo); }
+@keyframes latir { 0%, 100% { transform: translate(-50%, -50%) scale(1); } 50% { transform: translate(-50%, -50%) scale(1.08); opacity: .75; } }
 
 /* Pasos */
 .pasos { list-style: none; padding: 0; margin: -1.5rem auto 2.5rem; max-width: 960px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; position: relative; z-index: 2; }
@@ -603,14 +592,14 @@ body { overflow-x: hidden; }
   .portada-texto p { margin-left: auto; margin-right: auto; }
   .portada-botones { justify-content: center; }
   .logo-portada { width: 110px; }
-  .portada-mascota { order: -1; }
-  #mascota { width: min(200px, 55vw); }
-  .globo-mascota { right: 2%; font-size: .75rem; max-width: 130px; }
+  .portada-escudo { flex-direction: row; justify-content: center; margin-top: 1rem; }
+  .portada-escudo img { width: 64px; }
+  .portada-escudo span { font-size: .75rem; text-align: left; border-top: 0; border-left: 3px solid var(--amarillo); padding: 0 0 0 .6rem; }
+  .portada-escudo::before { display: none; }
   .pasos { grid-template-columns: 1fr; margin-top: -1rem; }
   .galeria-vigilantes { grid-template-columns: repeat(3, 1fr); }
   .ficha-vigilante svg { width: 70px; height: 70px; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  #mascota, .portada-mascota::before { animation: none !important; }
-}
+  

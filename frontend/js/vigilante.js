@@ -85,6 +85,12 @@ export class Vigilante {
   elegirVoz() {
     const { genero } = this.personaje.voz;
     const filtro = genero === "f" ? VOCES_MUJER : genero === "m" ? VOCES_HOMBRE : null;
+    if (this.personaje.vozAnterior) {
+      // Forma anterior de elegir (el dueño prefiere cómo sonaban así algunos personajes)
+      const mexicana = (v) => v.lang === "es-MX";
+      return (filtro && (this.voces.find((v) => filtro.test(v.name) && mexicana(v)) ?? this.voces.find((v) => filtro.test(v.name))))
+        ?? this.voces.find(mexicana) ?? this.voces[0] ?? null;
+    }
     const puntos = (v) => (/natural|neural|online/i.test(v.name) ? 4 : 0) + (/google/i.test(v.name) ? 2 : 0)
       + (/es-(MX|US|419)/i.test(v.lang) ? 2 : 0) + (filtro && filtro.test(v.name) ? 3 : 0);
     return [...this.voces].sort((a, b) => puntos(b) - puntos(a))[0] ?? null;

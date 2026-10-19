@@ -46,7 +46,7 @@ function crearSelectorVigilantes() {
 }
 crearSelectorVigilantes();
 
-// ---------- Portada: mascota y galería de vigilantes ----------
+// ---------- Portada: galería de vigilantes ----------
 /** Hace hablar a un personaje desde la portada (y mueve la boca de su dibujo). */
 function escucharPersonaje(id, dibujo) {
   prepararSonido();
@@ -61,12 +61,6 @@ function escucharPersonaje(id, dibujo) {
 }
 
 function crearPortada() {
-  const leon = VIGILANTES.find((v) => v.id === "leon");
-  const mascota = $("mascota");
-  if (leon) {
-    mascota.innerHTML = leon.svg;
-    mascota.addEventListener("click", () => escucharPersonaje("leon", mascota));
-  }
   const galeria = $("galeria");
   const elegido = cargarPreferencias().apariencia;
   for (const v of VIGILANTES) {

@@ -131,37 +131,6 @@ export const VIGILANTES = [
       <g class="pupilas"><circle class="pupila" cx="77" cy="117" r="6"/><circle class="pupila" cx="123" cy="117" r="6"/></g>
       <path class="boca" d="M86 140 L114 140"/>`,
   },
-  {
-    id: "leon",
-    nombre: "León Azul",
-    descripcion: "Mascota de VigilaTec. Valiente, noble y motivador.",
-    voz: { tono: 0.75, velocidad: 0.98, genero: "m" },
-    efecto: "rugido",
-    frases: {
-      calma: "Así se estudia, con garra. Sigue así.",
-      animo: ["¡Eso es! Tienes corazón de león.", "Ruge con orgullo: vas muy bien.", "Nadie detiene a un león concentrado."],
-      inicioExamen: "Es hora de rugir. ¡El examen comienza!",
-      inicioEstudio: "¡Vamos, manada! A estudiar con todo.",
-    },
-    decorar: (texto, nivel) => (nivel === 2 ? "¡Arriba esa garra! " : nivel === 3 ? "¡Un león no se rinde! " : "") + texto,
-    svg: `${HALO}
-      <path class="relleno" d="M58 190 Q62 156 100 152 Q138 156 142 190 Z"/>
-      <path class="dorado-tec" d="M88 160 L100 176 L112 160 Z"/>
-      <g class="melena">
-        <path d="M100 24 L114 46 L138 34 L140 60 L166 58 L156 82 L178 96 L156 110 L170 132 L144 134 L146 160 L122 150 L112 174 L100 154 L88 174 L78 150 L54 160 L56 134 L30 132 L44 110 L22 96 L44 82 L34 58 L60 60 L62 34 L86 46 Z"/>
-      </g>
-      <circle class="oreja-leon" cx="68" cy="64" r="12"/><circle class="oreja-leon" cx="132" cy="64" r="12"/>
-      <circle class="oreja-interior-leon" cx="68" cy="64" r="6"/><circle class="oreja-interior-leon" cx="132" cy="64" r="6"/>
-      <path class="cara-leon" d="M64 100 Q62 62 100 58 Q138 62 136 100 Q136 138 100 146 Q64 138 64 100 Z"/>
-      <path class="hocico" d="M80 118 Q80 104 100 104 Q120 104 120 118 Q120 136 100 138 Q80 136 80 118 Z"/>
-      <g class="cejas"><path class="ceja izq" d="M72 88 Q83 81 94 86"/><path class="ceja der" d="M106 86 Q117 81 128 88"/></g>
-      <ellipse class="blanco" cx="84" cy="98" rx="9" ry="8"/><ellipse class="blanco" cx="116" cy="98" rx="9" ry="8"/>
-      <g class="pupilas"><circle class="pupila" cx="84" cy="99" r="5"/><circle class="pupila" cx="116" cy="99" r="5"/>
-        <circle class="blanco" cx="86" cy="97" r="1.6"/><circle class="blanco" cx="118" cy="97" r="1.6"/></g>
-      <path class="nariz-leon" d="M92 108 L108 108 L100 118 Z"/>
-      <path class="bigote-leon" d="M84 122 L70 120 M84 126 L70 128 M116 122 L130 120 M116 126 L130 128"/>
-      <path class="boca" d="M86 126 Q100 139 114 126"/>`,
-  },
   // ===================== PREMIUM (prototipo: inspirados en personajes famosos; NO publicar ni vender así) =====================
   {
     id: "penumbra",
@@ -306,6 +275,7 @@ export const VIGILANTES = [
   },
   {
     id: "musgo",
+    vozAnterior: true,   // conserva la voz de antes (decisión del dueño)
     premium: true,
     nombre: "Maestro Musgo",
     descripcion: "Pequeño maestro verde de orejas largas. Habla al revés, sabio es.",
@@ -343,6 +313,7 @@ export const VIGILANTES = [
   },
   {
     id: "exo",
+    vozAnterior: true,   // conserva la voz de antes (decisión del dueño)
     premium: true,
     nombre: "Exo-Guardián",
     descripcion: "Genio en armadura roja y dorada. Rápido, brillante y sarcástico.",
