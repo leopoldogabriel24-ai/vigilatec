@@ -515,9 +515,7 @@ body { overflow-x: hidden; }
 .portada::before { content: ""; position: absolute; inset: 0; background-image: radial-gradient(rgba(255, 255, 255, .09) 1.5px, transparent 1.5px); background-size: 22px 22px; pointer-events: none; }
 .portada::after { content: ""; position: absolute; left: -5%; right: -5%; bottom: -60px; height: 110px; background: var(--blanco); border-radius: 50%; }
 .portada > * { position: relative; z-index: 1; }
-.logo-portada { display: inline-flex; flex-direction: column; align-items: center; gap: .35rem; margin-bottom: 1rem; }
-.logo-portada img { width: 150px; height: auto; filter: brightness(0) invert(1); opacity: .95; }
-.logo-portada span { font-size: .62rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; text-align: center; line-height: 1.35; }
+.logo-portada { display: block; width: 220px; height: auto; filter: brightness(0) invert(1); margin-bottom: 1rem; }
 .portada-escudo small { display: block; font-size: .8em; color: var(--amarillo-claro); letter-spacing: .12em; }
 .portada h1 { color: var(--blanco); text-align: left; font-size: clamp(1.9rem, 5vw, 3rem); line-height: 1.15; margin-bottom: 1rem; }
 .portada mark { background: linear-gradient(transparent 62%, rgba(245, 184, 0, .85) 62%); color: inherit; padding: 0 .05em; }
@@ -594,7 +592,7 @@ body { overflow-x: hidden; }
   .portada h1 { text-align: center; }
   .portada-texto p { margin-left: auto; margin-right: auto; }
   .portada-botones { justify-content: center; }
-  .logo-portada img { width: 110px; }
+  .logo-portada { width: 170px; margin-left: auto; margin-right: auto; }
   .portada-escudo { flex-direction: row; justify-content: center; margin-top: 1rem; }
   .portada-escudo img { width: 64px; }
   .portada-escudo span { font-size: .75rem; text-align: left; border-top: 0; border-left: 3px solid var(--amarillo); padding: 0 0 0 .6rem; }
